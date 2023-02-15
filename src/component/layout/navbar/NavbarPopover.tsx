@@ -30,22 +30,22 @@ function NavbarPopover() {
           <PopoverTrigger>
             <HStack spacing={4}>
               <VStack alignItems="flex-start" spacing={0}>
-                <HStack spacing={0.5}>
+                {/* <HStack spacing={0.5}>
                   <Icon opacity={0.8} boxSize={3} as={FaCalendarAlt} />
                   <NoSSR>
                     <Text>{new Date().toLocaleDateString()}</Text>
                   </NoSSR>
-                </HStack>
+                </HStack> */}
                 <HStack spacing={0.5}>
                   <Icon opacity={0.8} boxSize={3} as={FaMapMarkerAlt} />
-                  <Text>Seoul 🇰🇷</Text>
+                  <Text>Seoul, South Korea 🇰🇷</Text>
                 </HStack>
               </VStack>
-              <Icon
+              {/* <Icon
                 transform={isOpen ? 'rotate(180deg)' : 'rotate(0deg)'}
                 transition="transform 0.2s"
                 as={FaChevronDown}
-              />
+              /> */}
             </HStack>
           </PopoverTrigger>
           <PopoverContent color="white" bg="blue.800" borderColor="blue.800">

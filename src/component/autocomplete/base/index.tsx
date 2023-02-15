@@ -18,6 +18,9 @@ import {
   Icon,
   Popover,
   PopoverBody,
+  PopoverAnchor,
+  PopoverContent,
+  PopoverTrigger,
 } from '@chakra-ui/react';
 import { useRef } from 'react';
 import { FaSearch } from 'react-icons/fa';
@@ -49,33 +52,35 @@ export function Autocomplete<T extends object>(props: AutocompleteProps<T>) {
   );
 
   return (
-    <Box display="inline-block" position="relative">
-      <FormLabel {...labelProps}>{props.label}</FormLabel>
-      <InputGroup>
-        <InputLeftElement>
-          <Icon as={FaSearch} color="gray.500" />
-        </InputLeftElement>
-        <Input {...inputProps} variant="filled" ref={inputRef} size="md" />
-        <InputRightElement>
-          {props.loadingState === 'loading' ||
-          props.loadingState === 'filtering' ? (
-            <Spinner color="blue.400" size="sm" />
-          ) : null}
-        </InputRightElement>
-      </InputGroup>
-      {state.isOpen && (
-        <Popover isOpen={state.isOpen} placement="bottom">
-          <PopoverBody ref={popoverRef}>
-            <ListBox
-              {...listBoxProps}
-              listBoxRef={listBoxRef}
-              state={state}
-              loadingState={props.loadingState}
-              onLoadMore={props.onLoadMore}
-            />
-          </PopoverBody>
-        </Popover>
-      )}
-    </Box>
+    <Popover autoFocus={false} isOpen={state.isOpen} placement="bottom">
+      <PopoverAnchor>
+        <Box display="inline-block" position="relative">
+          <FormLabel {...labelProps}>{props.label}</FormLabel>
+          <InputGroup>
+            <InputLeftElement>
+              <Icon as={FaSearch} color="gray.500" />
+            </InputLeftElement>
+            <Input {...inputProps} variant="filled" ref={inputRef} size="md" />
+            <InputRightElement>
+              {props.loadingState === 'loading' ||
+              props.loadingState === 'filtering' ? (
+                <Spinner color="blue.400" size="sm" />
+              ) : null}
+            </InputRightElement>
+          </InputGroup>
+        </Box>
+      </PopoverAnchor>
+      <PopoverContent ref={popoverRef}>
+        <PopoverBody>
+          <ListBox
+            {...listBoxProps}
+            listBoxRef={listBoxRef}
+            state={state}
+            loadingState={props.loadingState}
+            onLoadMore={props.onLoadMore}
+          />
+        </PopoverBody>
+      </PopoverContent>
+    </Popover>
   );
 }

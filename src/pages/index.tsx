@@ -7,7 +7,7 @@ import type { NextPage } from 'next';
 
 const Home: NextPage = () => {
   return (
-    <VStack alignItems="baseline" spacing={2}>
+    <VStack px={4} alignItems="normal" spacing={2}>
       <Navbar />
       <EventFinderInput />
       <HomeCategories />

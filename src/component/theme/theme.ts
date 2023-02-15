@@ -1,14 +1,7 @@
 // 1. Import the extendTheme function
-import { extendTheme, StyleConfig } from '@chakra-ui/react';
-import type { Theme } from '@chakra-ui/react';
+import { extendTheme } from '@chakra-ui/react';
+import type { Theme, StyleConfig } from '@chakra-ui/react';
 // 2. Extend the theme to include custom colors, fonts, etc
-const colors = {
-  brand: {
-    900: '#1a365d',
-    800: '#153e75',
-    700: '#2a69ac',
-  },
-};
 
 const activeLabelStyles = {
   transform: 'scale(0.85) translateY(-24px)',
@@ -16,7 +9,7 @@ const activeLabelStyles = {
 const components: Record<string, StyleConfig> = {
   Form: {
     variants: {
-      floating: ({ colorMode, colorScheme }) => ({
+      floating: {
         container: {
           _focusWithin: {
             label: {
@@ -39,7 +32,7 @@ const components: Record<string, StyleConfig> = {
             transformOrigin: 'left top',
           },
         },
-      }),
+      },
     },
   },
 };

@@ -63,9 +63,7 @@ function Option({ item, state }: OptionProps) {
       ref={ref}
       px="2"
       py="2"
-      background={isFocused ? 'blue.50' : 'white'}
-      color={isFocused ? 'blue.700' : 'gray.700'}
-      fontWeight={isSelected ? 'bold' : 'normal'}
+      fontWeight={isFocused ? 'bold' : 'normal'}
       cursor="default"
       display="flex"
       alignItems="center"

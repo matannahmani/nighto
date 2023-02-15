@@ -5,7 +5,6 @@ const NavbarNotifications = () => {
   return (
     <IconButton
       variant="ghost"
-      ml="auto!important"
       //   colorScheme="teal"
       aria-label="Notifications"
       icon={<FaBell />}

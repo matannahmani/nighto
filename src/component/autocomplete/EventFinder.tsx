@@ -11,7 +11,7 @@ function EventFinderInput() {
   return (
     <Flex justify="center" align="center" w="full">
       <Autocomplete
-        label="Search for an event, artist, or venue"
+        placeholder="Search Event, Venue, or Artist"
         // placeholder=""
         items={data ?? []}
         inputValue={search}
