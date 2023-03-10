@@ -7,6 +7,8 @@ import { api } from '../utils/api';
 import '../styles/globals.css';
 import { ChakraProvider } from '@chakra-ui/react';
 import { theme } from '@/component/theme/theme';
+import { SSRProvider } from 'react-aria';
+import Layout from '@/component/layout/Layout';
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -14,9 +16,13 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <ChakraProvider theme={theme}>
-        <Component {...pageProps} />
-      </ChakraProvider>
+      <SSRProvider>
+        <ChakraProvider theme={theme}>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </ChakraProvider>
+      </SSRProvider>
     </SessionProvider>
   );
 };

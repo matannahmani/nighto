@@ -6,10 +6,10 @@ import NavbarPopover from './NavbarPopover';
 const Navbar = () => {
   return (
     <HStack py={2} width="100%" spacing={2}>
-      <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
-      <NavbarPopover />
+      {/* <Avatar name="Dan Abrahmov" src="https://bit.ly/dan-abramov" />
+      <NavbarPopover /> */}
       <ColorModeToggle />
-      <NavbarNotifications />
+      {/* <NavbarNotifications /> */}
     </HStack>
   );
 };

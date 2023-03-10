@@ -10,6 +10,7 @@
     "start": "next start"
   },
   "dependencies": {
+    "@chakra-ui/icons": "^2.0.17",
     "@chakra-ui/react": "^2.5.0",
     "@chakra-ui/theme-tools": "^2.0.17",
     "@emotion/react": "^11.10.5",
@@ -23,6 +24,7 @@
     "@trpc/server": "^10.9.0",
     "date-fns": "^2.29.3",
     "framer-motion": "^9.0.3",
+    "jotai": "^2.0.3",
     "next": "13.1.6",
     "next-auth": "^4.19.0",
     "react": "18.2.0",
