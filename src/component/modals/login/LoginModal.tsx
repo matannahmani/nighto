@@ -114,6 +114,7 @@ const LoginEmail = ({ ...props }: ReturnType<typeof useSignIn>) => {
             borderColor={isEmailValid ? 'green.400' : ''}
             focusBorderColor={isEmailValid ? 'green.400' : ''}
             isInvalid={!isEmailValid}
+            autoFocus
             errorBorderColor="red.300"
             type="email"
             placeholder="Email"

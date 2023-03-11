@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import {
   Box,
   Flex,
@@ -15,6 +15,9 @@ import {
   Stack,
   useColorMode,
   Center,
+  IconButton,
+  HStack,
+  Collapse,
 } from '@chakra-ui/react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { signOut, useSession } from 'next-auth/react';
@@ -107,31 +110,108 @@ const ProfileOrLogin = () => {
   return <ProfileMenu session={session} />;
 };
 
+const useNavbarScroll = () => {
+  const [prevScrollPos, setPrevScrollPos] = useState(0);
+  const [visible, setVisible] = useState(true);
+
+  const handleScroll = () => {
+    const currentScrollPos = window.scrollY;
+
+    if (currentScrollPos > prevScrollPos) {
+      setVisible(false);
+    } else {
+      setVisible(true);
+    }
+
+    setPrevScrollPos(currentScrollPos);
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  });
+  return visible;
+};
+
 export default function NavbarV2() {
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const visible = useNavbarScroll();
+
   return (
     <>
-      <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
-        <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
-          <Box>
-            <AppIcon
-              fill={useColorModeValue('gray.800', 'white')}
-              width={120}
-              height={54}
+      <Box
+        sx={{
+          position: 'fixed',
+          top: 0,
+          transition: 'all 0.3s ease-in-out',
+          transform: visible ? 'translateY(0)' : 'translateY(-100%)',
+          zIndex: 100,
+          width: '100%',
+        }}
+      >
+        <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
+          <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
+            <IconButton
+              size={'md'}
+              icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+              aria-label={'Open Menu'}
+              display={{ md: 'none' }}
+              onClick={isOpen ? onClose : onOpen}
             />
-          </Box>
 
-          <Flex alignItems={'center'}>
-            <Stack direction={'row'} spacing={7}>
-              <Button onClick={toggleColorMode}>
-                {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-              </Button>
-              <ProfileOrLogin />
-            </Stack>
+            <Box>
+              <AppIcon
+                fill={useColorModeValue('gray.800', 'white')}
+                width={120}
+                height={54}
+              />
+            </Box>
+            <HStack spacing={8}>
+              <HStack
+                as={'nav'}
+                spacing={4}
+                display={{ base: 'none', md: 'flex' }}
+              >
+                {Links.map((link) => (
+                  <NavLink key={link}>{link}</NavLink>
+                ))}
+              </HStack>
+            </HStack>
+            <Flex alignItems={'center'}>
+              <Stack direction={'row'} spacing={7}>
+                <Button
+                  display={{ base: 'none', md: 'flex' }}
+                  onClick={toggleColorMode}
+                >
+                  {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+                </Button>
+                <ProfileOrLogin />
+              </Stack>
+            </Flex>
           </Flex>
-        </Flex>
+          <Collapse in={isOpen} animateOpacity>
+            <Box pb={4} display={{ md: 'none' }}>
+              <Stack as={'nav'} spacing={4}>
+                {Links.map((link) => (
+                  <NavLink key={link}>{link}</NavLink>
+                ))}
+                <Button w="min-content" onClick={toggleColorMode}>
+                  {colorMode === 'light' ? 'Dark' : 'Light'}
+                  &nbsp;&nbsp;
+                  {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+                </Button>
+              </Stack>
+            </Box>
+          </Collapse>
+        </Box>
       </Box>
     </>
   );
 }
+
+import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
+
+const Links = ['Dashboard', 'Projects', 'Team'];
