@@ -17,10 +17,12 @@ import {
   Center,
 } from '@chakra-ui/react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
-import { useSession } from 'next-auth/react';
+import { signOut, useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import { useLoginModal } from '@/component/modals/login/LoginModal';
 import { Session } from 'next-auth';
+import Image from 'next/image';
+import AppIcon from './AppIcon';
 
 const LoginModal = dynamic(() => import('@/component/modals/login/LoginModal'));
 
@@ -81,14 +83,20 @@ const ProfileMenu = ({ session }: { session: Session }) => (
       </Center>
       <br />
       <Center>
-        <p>{session.user.name}</p>
+        <p>{session.user.name ?? session.user.email}</p>
       </Center>
       <br />
       <MenuDivider />
       <MenuItem>Your Preference</MenuItem>
       <MenuItem>Past Explorations</MenuItem>
       <MenuItem>Account Settings</MenuItem>
-      <MenuItem>Logout</MenuItem>
+      <MenuItem
+        onClick={() => {
+          void signOut();
+        }}
+      >
+        Logout
+      </MenuItem>
     </MenuList>
   </Menu>
 );
@@ -106,7 +114,13 @@ export default function NavbarV2() {
     <>
       <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
         <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
-          <Box>Nighto</Box>
+          <Box>
+            <AppIcon
+              fill={useColorModeValue('gray.800', 'white')}
+              width={120}
+              height={54}
+            />
+          </Box>
 
           <Flex alignItems={'center'}>
             <Stack direction={'row'} spacing={7}>

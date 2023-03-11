@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
+import { EmailIcon } from '@chakra-ui/icons';
 import { ModalCloseButton } from '@chakra-ui/react';
 import {
   Stack,
   Button,
   Image,
   Text,
+  Icon,
   Modal,
   ModalContent,
   ModalOverlay,
@@ -12,7 +14,7 @@ import {
 import { atom, useAtom } from 'jotai';
 import { signIn } from 'next-auth/react';
 import { memo, useCallback, useState } from 'react';
-
+import { MdEmail } from 'react-icons/md/index';
 const loginModalAtom = atom(false);
 
 export const useLoginModal = () => {
@@ -30,7 +32,7 @@ const useSignIn = () => {
   const [isLoading, setLoading] = useState(false);
 
   const handleSignIn = useCallback(
-    async (method: 'facebook' | 'instagram' | 'google') => {
+    async (method: 'facebook' | 'email' | 'google') => {
       setLoading(true);
       try {
         await signIn(method);
@@ -91,31 +93,39 @@ const LoginModal = (): JSX.Element => {
             onClick={() => handleSignIn('facebook')}
             isLoading={isLoading}
             justifyContent="flex-start"
-            leftIcon={<Image alt="facebook" src="/images/facebook.png" />}
+            leftIcon={
+              <Image width="24px" alt="facebook" src="/images/facebook.png" />
+            }
             size="lg"
             width={240}
           >
             Login with Facebook
           </Button>
           <Button
-            onClick={() => handleSignIn('facebook')}
+            onClick={() => handleSignIn('google')}
             isLoading={isLoading}
             justifyContent="flex-start"
-            leftIcon={<Image alt="google" src="/images/google.png" />}
+            leftIcon={
+              <Image width="24px" alt="google" src="/images/google.png" />
+            }
             size="lg"
             width={240}
           >
             Login with Google
           </Button>
           <Button
-            onClick={() => handleSignIn('facebook')}
+            onClick={() => handleSignIn('email')}
             isLoading={isLoading}
             justifyContent="flex-start"
-            leftIcon={<Image alt="instagram" src="/images/instagram.png" />}
+            leftIcon={
+              <Text width="24px" fontSize="2xl">
+                @
+              </Text>
+            }
             size="lg"
             width={240}
           >
-            Login with Instagram
+            Login with Email
           </Button>
         </Stack>
       </ModalContent>

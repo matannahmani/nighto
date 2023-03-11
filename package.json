@@ -27,6 +27,8 @@
     "jotai": "^2.0.3",
     "next": "13.1.6",
     "next-auth": "^4.19.0",
+    "next-images": "^1.8.4",
+    "nodemailer": "^6.9.1",
     "react": "18.2.0",
     "react-aria": "^3.22.0",
     "react-dom": "18.2.0",
