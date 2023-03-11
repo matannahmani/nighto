@@ -5,7 +5,7 @@ import type { NextPage } from 'next';
 
 const Home: NextPage = () => {
   return (
-    <Container maxW="container.lg">
+    <Container mx="auto" maxW="container.lg">
       <LandingHero />
     </Container>
   );

@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 // pages/_document.js
 
-import { theme } from '@/component/theme/theme';
+import { theme } from '@/theme';
 import { ColorModeScript } from '@chakra-ui/react';
 import { Html, Head, Main, NextScript } from 'next/document';
 

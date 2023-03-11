@@ -18,13 +18,15 @@ import {
   IconButton,
   HStack,
   Collapse,
+  Hide,
+  useBreakpointValue,
 } from '@chakra-ui/react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { signOut, useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import { useLoginModal } from '@/component/modals/login/LoginModal';
 import { Session } from 'next-auth';
-import Image from 'next/image';
+import NextLink from 'next/link';
 import AppIcon from './AppIcon';
 
 const LoginModal = dynamic(() => import('@/component/modals/login/LoginModal'));
@@ -41,8 +43,9 @@ const LoginBTN = () => {
     );
   return null;
 };
-const NavLink = ({ children }: { children: ReactNode }) => (
+const NavLink = ({ children, href }: { href: string; children: ReactNode }) => (
   <Link
+    as={NextLink}
     px={2}
     py={1}
     rounded={'md'}
@@ -50,59 +53,69 @@ const NavLink = ({ children }: { children: ReactNode }) => (
       textDecoration: 'none',
       bg: useColorModeValue('gray.200', 'gray.700'),
     }}
-    href={'#'}
+    href={href}
   >
     {children}
   </Link>
 );
 
-const ProfileMenu = ({ session }: { session: Session }) => (
-  <Menu>
-    <MenuButton
-      as={Button}
-      rounded={'full'}
-      variant={'link'}
-      cursor={'pointer'}
-      minW={0}
+const ProfileMenu = ({ session }: { session: Session }) => {
+  const isMenuVisible = useNavbarScroll();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  return (
+    <Menu
+      preventOverflow={true}
+      isOpen={isOpen && isMenuVisible}
+      onClose={onClose}
+      onOpen={onOpen}
     >
-      <Avatar
-        size={'sm'}
-        src={
-          session.user.image ??
-          'https://avatars.dicebear.com/api/male/username.svg'
-        }
-      />
-    </MenuButton>
-    <MenuList alignItems={'center'}>
-      <br />
-      <Center>
+      <MenuButton
+        as={Button}
+        isActive={isOpen && false}
+        rounded={'full'}
+        variant={'link'}
+        cursor={'pointer'}
+        minW={0}
+      >
         <Avatar
-          size={'2xl'}
+          size={'sm'}
           src={
             session.user.image ??
             'https://avatars.dicebear.com/api/male/username.svg'
           }
         />
-      </Center>
-      <br />
-      <Center>
-        <p>{session.user.name ?? session.user.email}</p>
-      </Center>
-      <br />
-      <MenuDivider />
-      <MenuItem>Your Preference</MenuItem>
-      <MenuItem>Past Explorations</MenuItem>
-      <MenuItem>Account Settings</MenuItem>
-      <MenuItem
-        onClick={() => {
-          void signOut();
-        }}
-      >
-        Logout
-      </MenuItem>
-    </MenuList>
-  </Menu>
-);
+      </MenuButton>
+      <MenuList alignItems={'center'}>
+        <br />
+        <Center>
+          <Avatar
+            size={'2xl'}
+            src={
+              session.user.image ??
+              'https://avatars.dicebear.com/api/male/username.svg'
+            }
+          />
+        </Center>
+        <br />
+        <Center>
+          <p>{session.user.name ?? session.user.email}</p>
+        </Center>
+        <br />
+        <MenuDivider />
+        <MenuItem>Your Preference</MenuItem>
+        <MenuItem>Past Explorations</MenuItem>
+        <MenuItem>Account Settings</MenuItem>
+        <MenuItem
+          onClick={() => {
+            void signOut();
+          }}
+        >
+          Logout
+        </MenuItem>
+      </MenuList>
+    </Menu>
+  );
+};
 
 const ProfileOrLogin = () => {
   const { data: session, status } = useSession();
@@ -134,6 +147,8 @@ const useNavbarScroll = () => {
   return visible;
 };
 
+export const NavbarHeight = 16;
+
 export default function NavbarV2() {
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -150,62 +165,77 @@ export default function NavbarV2() {
           zIndex: 100,
           width: '100%',
         }}
+        bg={useColorModeValue('gray.100', 'gray.900')}
+        px={4}
       >
-        <Box bg={useColorModeValue('gray.100', 'gray.900')} px={4}>
-          <Flex h={16} alignItems={'center'} justifyContent={'space-between'}>
-            <IconButton
-              size={'md'}
-              icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
-              aria-label={'Open Menu'}
-              display={{ md: 'none' }}
-              onClick={isOpen ? onClose : onOpen}
-            />
+        <Flex
+          h={NavbarHeight}
+          alignItems={'center'}
+          justifyContent={'space-between'}
+        >
+          <IconButton
+            size={'md'}
+            icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
+            aria-label={'Open Menu'}
+            display={{ md: 'none' }}
+            onClick={isOpen ? onClose : onOpen}
+          />
 
-            <Box>
-              <AppIcon
-                fill={useColorModeValue('gray.800', 'white')}
-                width={120}
-                height={54}
-              />
-            </Box>
-            <HStack spacing={8}>
-              <HStack
-                as={'nav'}
-                spacing={4}
-                display={{ base: 'none', md: 'flex' }}
-              >
-                {Links.map((link) => (
-                  <NavLink key={link}>{link}</NavLink>
-                ))}
-              </HStack>
+          <Box
+            mx={{
+              base: 'auto',
+              md: 0,
+            }}
+          >
+            <AppIcon
+              fill={useColorModeValue('gray.800', 'white')}
+              width={120}
+              height={54}
+            />
+          </Box>
+          <HStack
+            display={{ base: 'none', md: 'flex' }}
+            mr="auto"
+            ml={6}
+            spacing={8}
+          >
+            <HStack as={'nav'} spacing={4}>
+              {Links.map((link) => (
+                <NavLink key={link.label} href={link.href}>
+                  {link.label}
+                </NavLink>
+              ))}
             </HStack>
-            <Flex alignItems={'center'}>
-              <Stack direction={'row'} spacing={7}>
-                <Button
-                  display={{ base: 'none', md: 'flex' }}
-                  onClick={toggleColorMode}
-                >
+          </HStack>
+          <Flex alignItems={'center'}>
+            <Stack direction={'row'} spacing={7}>
+              <Hide below="md">
+                <Button onClick={toggleColorMode}>
                   {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
                 </Button>
+              </Hide>
+              <Flex>
                 <ProfileOrLogin />
-              </Stack>
-            </Flex>
+              </Flex>
+            </Stack>
           </Flex>
-          <Collapse in={isOpen} animateOpacity>
-            <Box pb={4} display={{ md: 'none' }}>
-              <Stack as={'nav'} spacing={4}>
-                {Links.map((link) => (
-                  <NavLink key={link}>{link}</NavLink>
-                ))}
-                <Button w="min-content" onClick={toggleColorMode}>
-                  {colorMode === 'light' ? 'Dark' : 'Light'}
-                  &nbsp;&nbsp;
-                  {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-                </Button>
-              </Stack>
-            </Box>
-          </Collapse>
-        </Box>
+        </Flex>
+        <Collapse in={isOpen} animateOpacity>
+          <Box pb={4} display={{ md: 'none' }}>
+            <Stack as={'nav'} spacing={4}>
+              {Links.map((link) => (
+                <NavLink href={link.href} key={link.label}>
+                  {link.label}
+                </NavLink>
+              ))}
+              <Button w="min-content" onClick={toggleColorMode}>
+                {colorMode === 'light' ? 'Dark' : 'Light'}
+                &nbsp;&nbsp;
+                {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
+              </Button>
+            </Stack>
+          </Box>
+        </Collapse>
       </Box>
     </>
   );
@@ -213,5 +243,29 @@ export default function NavbarV2() {
 
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
+import { MdHome, MdSearch } from 'react-icons/md';
 
-const Links = ['Dashboard', 'Projects', 'Team'];
+const Links = [
+  {
+    label: 'Home',
+    href: '/',
+    icon: <MdHome />,
+  },
+  {
+    label: 'Discover',
+    href: '/discover',
+    icon: <MdSearch />,
+  },
+  {
+    label: 'Night Clubs',
+    href: '/clubs',
+  },
+  {
+    label: 'Bars',
+    href: '/bars',
+  },
+  {
+    label: 'Events',
+    href: '/events',
+  },
+] as const;
