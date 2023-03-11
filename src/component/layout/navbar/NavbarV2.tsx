@@ -152,6 +152,7 @@ export const NavbarHeight = 16;
 export default function NavbarV2() {
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const isMD = useBreakpointValue({ base: false, md: true });
   const visible = useNavbarScroll();
 
   return (
@@ -209,11 +210,11 @@ export default function NavbarV2() {
           </HStack>
           <Flex alignItems={'center'}>
             <Stack direction={'row'} spacing={7}>
-              <Hide below="md">
+              {isMD && (
                 <Button onClick={toggleColorMode}>
                   {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
                 </Button>
-              </Hide>
+              )}
               <Flex>
                 <ProfileOrLogin />
               </Flex>

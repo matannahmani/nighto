@@ -1,5 +1,5 @@
 import LandingHero from '@/component/pages/landing/Hero';
-import { Button, Container, VStack } from '@chakra-ui/react';
+import { Container } from '@chakra-ui/react';
 
 import type { NextPage } from 'next';
 

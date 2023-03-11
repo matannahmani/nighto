@@ -8,11 +8,24 @@ import {
   List,
   ListItem,
   Badge,
+  Flex,
+  useColorMode,
 } from '@chakra-ui/react';
-
+function Example() {
+  const { colorMode, toggleColorMode } = useColorMode();
+  return (
+    <header>
+      <Button onClick={toggleColorMode}>
+        Toggle {colorMode === 'light' ? 'Dark' : 'Light'}
+      </Button>
+    </header>
+  );
+}
 function NightFinder() {
   return (
     <Stack spacing={6} p={8}>
+      <Flex bg="gray.600" h={6} w={'100vw'} />
+      <Example />
       <Heading>NightFinder</Heading>
       <Stack direction="row" justify="space-between">
         <Input placeholder="Location" size="lg" />

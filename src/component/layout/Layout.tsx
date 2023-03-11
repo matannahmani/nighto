@@ -1,8 +1,9 @@
-import { Flex } from '@chakra-ui/react';
+import { Box, Flex } from '@chakra-ui/react';
 import type { ReactElement } from 'react';
 import Footer from './footer/Footer';
 import NavbarV2, { NavbarHeight } from './navbar/NavbarV2';
-import { motion, AnimatePresence } from 'framer-motion';
+import { chakra } from '@chakra-ui/react';
+import { motion, isValidMotionProp, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/router';
 
 const Layout = ({ children }: { children: ReactElement }) => {

@@ -25,28 +25,9 @@ import {
   CalendarDays,
 } from '@uselessdev/datepicker';
 import { format, isValid } from 'date-fns';
+import { useAtom } from 'jotai';
 import { useRef, useState } from 'react';
-
-const calanderTheme = extendTheme(
-  { ...theme, ...(CalendarDefaultTheme as Record<string, string>) },
-  {
-    components: {
-      CalendarDay: {
-        // parts: ['button'],
-
-        baseStyle: {
-          _disabled: {
-            opacity: 0.4,
-          },
-
-          _hover: {
-            bg: 'gray.600',
-          },
-        },
-      },
-    },
-  }
-);
+import { dateAtom } from './atom';
 
 const isCalnderValues = (
   value: CalendarDate | CalendarValues
@@ -55,7 +36,7 @@ const isCalnderValues = (
 };
 
 const DiscoverDate = () => {
-  const [date, setDate] = useState<Date>(new Date());
+  const [date, setDate] = useAtom(dateAtom);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -77,62 +58,58 @@ const DiscoverDate = () => {
   };
 
   return (
-    <NoSSR>
-      <ChakraProvider theme={calanderTheme}>
-        <Popover placement="bottom-end" initialFocusRef={initialRef} isLazy>
-          <PopoverTrigger>
-            <Text
-              cursor="pointer"
-              w="fit-content"
-              fontSize={{
-                base: 'sm',
-                md: 'md',
-              }}
-              color="gray.400"
-            >
-              {date?.toLocaleDateString(undefined, {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-              }) || 'Select a date'}
-            </Text>
-          </PopoverTrigger>
+    <Popover placement="bottom-end" initialFocusRef={initialRef} isLazy>
+      <PopoverTrigger>
+        <Text
+          cursor="pointer"
+          w="fit-content"
+          fontSize={{
+            base: 'sm',
+            md: 'md',
+          }}
+          color="gray.400"
+        >
+          {date?.toLocaleDateString(undefined, {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+          }) || 'Select a date'}
+        </Text>
+      </PopoverTrigger>
 
-          <PopoverContent
-            p={0}
-            w="min-content"
-            border="none"
-            outline="none"
-            _focus={{ boxShadow: 'none' }}
-            ref={calendarRef}
-          >
-            <Calendar
-              value={{
-                start: date,
-              }}
-              disableFutureDates
-              onSelectDate={handleSelectDate}
-              singleDateSelection
-            >
-              <PopoverBody p={0}>
-                <CalendarControls>
-                  <CalendarPrevButton />
-                  <CalendarNextButton />
-                </CalendarControls>
+      <PopoverContent
+        p={0}
+        w="min-content"
+        border="none"
+        outline="none"
+        _focus={{ boxShadow: 'none' }}
+        ref={calendarRef}
+      >
+        <Calendar
+          value={{
+            start: date,
+          }}
+          disableFutureDates
+          onSelectDate={handleSelectDate}
+          singleDateSelection
+        >
+          <PopoverBody p={0}>
+            <CalendarControls>
+              <CalendarPrevButton />
+              <CalendarNextButton />
+            </CalendarControls>
 
-                <CalendarMonths>
-                  <CalendarMonth>
-                    <CalendarMonthName />
-                    <CalendarWeek />
-                    <CalendarDays />
-                  </CalendarMonth>
-                </CalendarMonths>
-              </PopoverBody>
-            </Calendar>
-          </PopoverContent>
-        </Popover>
-      </ChakraProvider>
-    </NoSSR>
+            <CalendarMonths>
+              <CalendarMonth>
+                <CalendarMonthName />
+                <CalendarWeek />
+                <CalendarDays />
+              </CalendarMonth>
+            </CalendarMonths>
+          </PopoverBody>
+        </Calendar>
+      </PopoverContent>
+    </Popover>
   );
 };
 
