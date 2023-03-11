@@ -1,6 +1,15 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import { EmailIcon } from '@chakra-ui/icons';
-import { ModalCloseButton } from '@chakra-ui/react';
+import { EmailIcon, PhoneIcon } from '@chakra-ui/icons';
+import {
+  Flex,
+  IconButton,
+  Input,
+  InputGroup,
+  InputLeftElement,
+  InputRightElement,
+  ModalCloseButton,
+  Spinner,
+} from '@chakra-ui/react';
 import {
   Stack,
   Button,
@@ -13,8 +22,10 @@ import {
 } from '@chakra-ui/react';
 import { atom, useAtom } from 'jotai';
 import { signIn } from 'next-auth/react';
-import { memo, useCallback, useState } from 'react';
-import { MdEmail } from 'react-icons/md/index';
+import { memo, useCallback, useMemo, useState } from 'react';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
+import { MdSend } from 'react-icons/md';
+import { z } from 'zod';
 const loginModalAtom = atom(false);
 
 export const useLoginModal = () => {
@@ -32,10 +43,14 @@ const useSignIn = () => {
   const [isLoading, setLoading] = useState(false);
 
   const handleSignIn = useCallback(
-    async (method: 'facebook' | 'email' | 'google') => {
+    async (method: 'facebook' | 'email' | 'google', email?: string) => {
       setLoading(true);
       try {
-        await signIn(method);
+        if (method === 'email' && email) {
+          await signIn('email', {
+            email,
+          });
+        } else await signIn(method);
       } catch (e) {
         console.log(e);
       } finally {
@@ -52,11 +67,68 @@ const useSignIn = () => {
   };
 };
 
+const emailZod = z.string().email();
+const LoginEmail = ({ ...props }: ReturnType<typeof useSignIn>) => {
+  const [parent] = useAutoAnimate();
+  const [isToggled, setToggled] = useState(false);
+  const [email, setEmail] = useState('');
+  const isEmailValid = useMemo(() => {
+    return emailZod.safeParse(email).success;
+  }, [email]);
+  return (
+    <Flex ref={parent}>
+      {!isToggled && (
+        <Button
+          onClick={() => setToggled(true)}
+          justifyContent="flex-start"
+          leftIcon={
+            <Text width="24px" fontSize="2xl">
+              @
+            </Text>
+          }
+          size="lg"
+          width={240}
+        >
+          Login with Email
+        </Button>
+      )}
+      {isToggled && (
+        <InputGroup>
+          <InputRightElement>
+            <IconButton
+              variant="link"
+              cursor="pointer"
+              isLoading={props.isLoading}
+              isDisabled={!isEmailValid}
+              onClick={() => props.handleSignIn('email', email)}
+              size="xs"
+              icon={<MdSend />}
+              color="gray.300"
+              aria-label={'send-email-link'}
+            />
+          </InputRightElement>
+          <Input
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
+            isRequired
+            borderColor={isEmailValid ? 'green.400' : ''}
+            focusBorderColor={isEmailValid ? 'green.400' : ''}
+            isInvalid={!isEmailValid}
+            errorBorderColor="red.300"
+            type="email"
+            placeholder="Email"
+          />
+        </InputGroup>
+      )}
+    </Flex>
+  );
+};
+
 const LoginModal = (): JSX.Element => {
   const [isOpen, setOpen] = useAtom(loginModalAtom);
   const onClose = useCallback(() => setOpen(false), []);
-  const { handleSignIn, isLoading } = useSignIn();
-
+  const login = useSignIn();
+  const { handleSignIn, isLoading } = login;
   return (
     <Modal
       size={{
@@ -113,20 +185,7 @@ const LoginModal = (): JSX.Element => {
           >
             Login with Google
           </Button>
-          <Button
-            onClick={() => handleSignIn('email')}
-            isLoading={isLoading}
-            justifyContent="flex-start"
-            leftIcon={
-              <Text width="24px" fontSize="2xl">
-                @
-              </Text>
-            }
-            size="lg"
-            width={240}
-          >
-            Login with Email
-          </Button>
+          <LoginEmail {...login} />
         </Stack>
       </ModalContent>
     </Modal>
