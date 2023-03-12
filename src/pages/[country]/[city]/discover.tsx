@@ -48,89 +48,87 @@ type data = RouterOutputs['discover']['retreive']['nearest'][number];
 export function DiscoverCard(props: data) {
   const router = useRouter();
   return (
-    <LinkBox as="article">
-      <NextLink
-        href={{
-          pathname: './venue/[id]',
-          query: { ...router.query, id: props.id },
-        }}
-      >
-        <LinkOverlay>
-          <VStack
-            spacing={2}
-            overflow="hidden"
-            whiteSpace="nowrap"
-            w="327px"
-            alignItems="flex-start"
-            textAlign="start"
-          >
-            <Box position="relative" w="100%" h={'auto'}>
-              <Image
-                src={props.photo}
-                w="100%"
-                h="218px"
-                borderRadius="2xl"
-                // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-                alt={`Photo of ${props.name} in ${props.city}, ${props.country}`}
-                objectFit="cover"
-              />
-              <Tag
-                position="absolute"
-                zIndex="3"
-                bottom="2"
-                left="2"
-                size="md"
-                w="min-content"
-                h="min-content"
-                variant="subtle"
-                colorScheme="black"
-              >
-                <TagLeftIcon boxSize="12px" as={FaClock} />
-                <TagLabel>
-                  {props.openTime} ~ {props.closeTime}
-                </TagLabel>
-              </Tag>
-            </Box>
-            <Text fontWeight="bold">{props.name}</Text>
-            <Text
-              textOverflow="ellipsis"
-              overflow="hidden"
-              maxWidth="100%"
-              color="gray.500"
-              fontSize="md"
+    <NextLink
+      href={{
+        pathname: './venue/[id]',
+        query: { ...router.query, id: props.id },
+      }}
+    >
+      <LinkOverlay as="span">
+        <VStack
+          spacing={2}
+          overflow="hidden"
+          whiteSpace="nowrap"
+          w="327px"
+          alignItems="flex-start"
+          textAlign="start"
+        >
+          <Box position="relative" w="100%" h={'auto'}>
+            <Image
+              src={props.photo}
+              w="100%"
+              h="218px"
+              borderRadius="2xl"
+              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+              alt={`Photo of ${props.name} in ${props.city}, ${props.country}`}
+              objectFit="cover"
+            />
+            <Tag
+              position="absolute"
+              zIndex="3"
+              bottom="2"
+              left="2"
+              size="md"
+              w="min-content"
+              h="min-content"
+              variant="subtle"
+              colorScheme="black"
             >
-              {props.address}
-            </Text>
-            <HStack spacing={2}>
-              {props.venueGenre[0] && (
-                <Tag size="md" variant="subtle" colorScheme="cyan">
-                  <TagLeftIcon boxSize="12px" as={FaMusic} />
-                  <TagLabel>{props.venueGenre[0]?.genre.mainGenre}</TagLabel>
-                </Tag>
-              )}
-              {props.rating && (
-                <Tag size="md" variant="subtle" colorScheme="orange">
-                  <TagLeftIcon boxSize="12px" as={FaStar} />
-                  <TagLabel>{props.rating}</TagLabel>
-                </Tag>
-              )}
-              {props.averageEntryFee && (
-                <Tag size="md" variant="subtle" colorScheme="red">
-                  <TagLeftIcon boxSize="12px" as={FaTicketAlt} />
-                  <TagLabel>{props.averageEntryFee.toFixed(2)} $</TagLabel>
-                </Tag>
-              )}
-              {props.averageDrinkPrice && (
-                <Tag size="md" variant="subtle" colorScheme="fuschia">
-                  <TagLeftIcon boxSize="12px" as={FaCocktail} />
-                  <TagLabel>{props.averageDrinkPrice.toFixed(2)} $</TagLabel>
-                </Tag>
-              )}
-            </HStack>
-          </VStack>
-        </LinkOverlay>
-      </NextLink>
-    </LinkBox>
+              <TagLeftIcon boxSize="12px" as={FaClock} />
+              <TagLabel>
+                {props.openTime} ~ {props.closeTime}
+              </TagLabel>
+            </Tag>
+          </Box>
+          <Text fontWeight="bold">{props.name}</Text>
+          <Text
+            textOverflow="ellipsis"
+            overflow="hidden"
+            maxWidth="100%"
+            color="gray.500"
+            fontSize="md"
+          >
+            {props.address}
+          </Text>
+          <HStack spacing={2}>
+            {props.venueGenre[0] && (
+              <Tag size="md" variant="subtle" colorScheme="cyan">
+                <TagLeftIcon boxSize="12px" as={FaMusic} />
+                <TagLabel>{props.venueGenre[0]?.genre.mainGenre}</TagLabel>
+              </Tag>
+            )}
+            {props.rating && (
+              <Tag size="md" variant="subtle" colorScheme="orange">
+                <TagLeftIcon boxSize="12px" as={FaStar} />
+                <TagLabel>{props.rating}</TagLabel>
+              </Tag>
+            )}
+            {props.averageEntryFee && (
+              <Tag size="md" variant="subtle" colorScheme="red">
+                <TagLeftIcon boxSize="12px" as={FaTicketAlt} />
+                <TagLabel>{props.averageEntryFee.toFixed(2)} $</TagLabel>
+              </Tag>
+            )}
+            {props.averageDrinkPrice && (
+              <Tag size="md" variant="subtle" colorScheme="fuschia">
+                <TagLeftIcon boxSize="12px" as={FaCocktail} />
+                <TagLabel>{props.averageDrinkPrice.toFixed(2)} $</TagLabel>
+              </Tag>
+            )}
+          </HStack>
+        </VStack>
+      </LinkOverlay>
+    </NextLink>
   );
 }
 
@@ -149,13 +147,26 @@ type DiscoverSectionT = {
   title: string;
   isLoading: boolean;
   href: string;
+  catid: string;
   data: data[] | undefined;
 };
 
-function DiscoverSection({ title, data, isLoading, href }: DiscoverSectionT) {
+function DiscoverSection({
+  title,
+  data,
+  isLoading,
+  href,
+  catid,
+}: DiscoverSectionT) {
   const router = useRouter();
   return (
-    <Flex w="100%" my={4} direction="column" alignItems="flex-start">
+    <Flex
+      key={title + 'cat'}
+      w="100%"
+      my={4}
+      direction="column"
+      alignItems="flex-start"
+    >
       <HStack
         w={{
           base: '100%',
@@ -191,7 +202,9 @@ function DiscoverSection({ title, data, isLoading, href }: DiscoverSectionT) {
               <DiscordCardSkeleton />
             </>
           ) : (
-            data?.map((venue) => <DiscoverCard key={venue.id} {...venue} />)
+            data?.map((venue, index) => (
+              <DiscoverCard {...venue} key={`${title}-${index}`} />
+            ))
           )}
         </HStack>
       </Scrollbars>
@@ -220,12 +233,16 @@ export default function DiscoverPage(
       <>
         <DiscoverSection
           href="./discover"
+          catid="near-seoul"
+          key="near"
           title={`Near ${city ?? ''}, ${country ?? ''}`}
           data={data?.nearest}
           isLoading={isLoading}
         />
         <DiscoverSection
           href="./venue"
+          catid="club-popular-seoul"
+          key="popular"
           title="Popular Clubs"
           data={data?.clubs}
           isLoading={isLoading}
@@ -238,7 +255,7 @@ export default function DiscoverPage(
 export async function getStaticProps(
   context: GetStaticPropsContext<{ country: string; city: string }>
 ) {
-  const ssg = createProxySSGHelpers({
+  const ssg = await createProxySSGHelpers({
     router: appRouter,
     ctx: {
       session: null,

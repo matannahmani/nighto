@@ -68,9 +68,12 @@ export const discoverRouter = createTRPCRouter({
       toppestRatedBarsPromise,
       toppestRatedClubsPromise,
     ]);
-    const nearest = [...toppestRatedBars, ...toppestRatedClubs].sort(
-      (a, b) => a.rating - b.rating
-    );
+    /**
+     * remove duplicates
+     */
+    const nearest = [...toppestRatedBars, ...toppestRatedClubs]
+      .filter((v, i, a) => a.findIndex((t) => t.id === v.id) === i)
+      .sort((a, b) => b.rating - a.rating);
     return {
       nearest: nearest,
       bars: toppestRatedBars,
