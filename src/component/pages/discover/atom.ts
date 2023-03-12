@@ -21,7 +21,6 @@ const cookieStorage: SyncStorage<discoverZ> = {
     return unstable_NO_STORAGE_VALUE;
   },
   setItem: (ctx, value) => {
-    console.log(JSON.stringify(value));
     cookies.set(ctx, JSON.stringify(value));
   },
   removeItem: (ctx) => cookies.remove(ctx),
@@ -36,6 +35,21 @@ const discoverAtom = atomWithStorage<discoverZ>(
   },
   cookieStorage
 );
+
+export const getDiscovery = () => {
+  const loc = cookies.get<string | undefined | object>('location');
+  try {
+    return discoverZod.parse(
+      typeof loc === 'object' ? loc : JSON.parse(loc ?? '')
+    );
+  } catch (err) {}
+  return {
+    date: new Date(),
+    country: 'kr',
+    city: 'Seoul',
+  };
+};
+
 export const dateAtom = focusAtom(discoverAtom, (optic) => optic.prop('date'));
 export const countryAtom = focusAtom(discoverAtom, (optic) =>
   optic.prop('country')

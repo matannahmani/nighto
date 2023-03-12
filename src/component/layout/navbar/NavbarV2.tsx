@@ -44,11 +44,20 @@ const LoginBTN = () => {
     );
   return null;
 };
-const NavLink = ({ children, href }: { href: string; children: ReactNode }) => (
+const NavLink = ({
+  children,
+  href,
+  onClick,
+}: {
+  href: string;
+  children: ReactNode;
+  onClick?: () => void;
+}) => (
   <Link
     as={NextLink}
     px={2}
     py={1}
+    {...(onClick ? { onClick } : {})}
     rounded={'md'}
     _hover={{
       textDecoration: 'none',
@@ -154,6 +163,7 @@ export const NavbarHeight = 16;
 export default function NavbarV2() {
   const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { data: session } = useSession();
   const isMD = useBreakpointValue({ base: false, md: true });
   const visible = useNavbarScroll();
 
@@ -203,11 +213,17 @@ export default function NavbarV2() {
             spacing={8}
           >
             <HStack as={'nav'} spacing={4}>
-              {Links.map((link) => (
-                <NavLink key={link.label} href={link.href}>
-                  {link.label}
-                </NavLink>
-              ))}
+              {Links.map((link) => {
+                if (link.renderCondition?.(session) ?? true)
+                  return (
+                    <NavLink
+                      key={link.label}
+                      href={`${link.prefix?.(session) ?? ''}${link.href}`}
+                    >
+                      {link.label}
+                    </NavLink>
+                  );
+              })}
             </HStack>
           </HStack>
           <Flex alignItems={'center'}>
@@ -226,11 +242,18 @@ export default function NavbarV2() {
         <Collapse in={isOpen} animateOpacity>
           <Box pb={4} display={{ md: 'none' }}>
             <Stack as={'nav'} spacing={4}>
-              {Links.map((link) => (
-                <NavLink href={link.href} key={link.label}>
-                  {link.label}
-                </NavLink>
-              ))}
+              {Links.map((link) => {
+                if (link.renderCondition?.(session) ?? true)
+                  return (
+                    <NavLink
+                      onClick={onClose}
+                      href={`${link.prefix?.(session) ?? ''}${link.href}`}
+                      key={link.label}
+                    >
+                      {link.label}
+                    </NavLink>
+                  );
+              })}
               <Button w="min-content" onClick={toggleColorMode}>
                 {colorMode === 'light' ? 'Dark' : 'Light'}
                 &nbsp;&nbsp;
@@ -247,8 +270,18 @@ export default function NavbarV2() {
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { MdHome, MdSearch } from 'react-icons/md';
+import Cookies from 'universal-cookie';
+import { getDiscovery } from '@/component/pages/discover/atom';
 
-const Links = [
+type Link = {
+  label: string;
+  href: string;
+  prefix?: (session: Session | null) => string;
+  icon?: React.ReactNode;
+  renderCondition?: (session: Session | null) => boolean;
+};
+
+const Links: readonly Link[] = [
   {
     label: 'Home',
     href: '/',
@@ -256,6 +289,10 @@ const Links = [
   },
   {
     label: 'Discover',
+    prefix: (session) => {
+      const { country, city } = getDiscovery();
+      return `/${country}/${city}`.toLowerCase();
+    },
     href: '/discover',
     icon: <MdSearch />,
   },
@@ -270,5 +307,10 @@ const Links = [
   {
     label: 'Events',
     href: '/events',
+  },
+  {
+    label: 'Managment Dashboard',
+    href: '/dashboard',
+    renderCondition: (session) => session?.user?.role === 'ADMIN',
   },
 ] as const;

@@ -15,6 +15,7 @@ datasource db {
   relationMode = "prisma"
 }
 
+
 // Necessary for Next auth
 model Account {
   id                String  @id @default(cuid())
@@ -57,7 +58,7 @@ model User {
   name            String?
   email           String?           @unique
   emailVerified   DateTime?
-  image           String?
+  image           String? @db.Text
   coins      Float             @default(0)
   role            UserRole          @default(USER)
   accounts        Account[]
@@ -116,8 +117,12 @@ model Venue {
   zipCode              String?
   latitude             Float?
   longitude            Float?
+  openTime             String?
+  closeTime            String?
+  
   rating               Float
-  photo                String
+  photo                String @db.Text
+  logo                 String? @db.Text
   capacity             Int?
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
@@ -218,6 +223,7 @@ enum mainMusicGenre {
   HOUSE
   TRANCE
   DANCE
+  EDM
   DRUM_AND_BASS
   AMBIENT
   INDUSTRIAL
@@ -299,6 +305,9 @@ model Event {
   venue                Venue           @relation(fields: [venueId], references: [id])
   venueId              Int
   rating               Float
+  photo                String          @db.Text
+  logo                 String?         @db.Text
+  capacity             Int?
   createdAt            DateTime        @default(now())
   updatedAt            DateTime        @updatedAt
   menuItems            MenuItem[]

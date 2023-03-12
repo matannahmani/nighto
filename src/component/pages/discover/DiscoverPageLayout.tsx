@@ -5,10 +5,19 @@ import DiscoverLocation from './DiscoverLocation';
 
 const DiscoverPageLayout = ({ children }: { children: ReactElement }) => {
   return (
-    <Container mr="auto" ml={2} maxW="container.xl">
+    <Container mr="auto" ml={2} maxW="100%" p={4}>
       <DiscoverDate />
       <DiscoverLocation />
-      <VStack spacing={4}>{children}</VStack>
+      <VStack
+        my={{
+          base: 0,
+          md: 4,
+        }}
+        alignItems="flex-start"
+        spacing={4}
+      >
+        {children}
+      </VStack>
     </Container>
   );
 };

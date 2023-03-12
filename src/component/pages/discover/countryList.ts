@@ -3,13 +3,13 @@ import { z } from 'zod';
 export const countryList = [
   {
     name: 'South Korea',
-    code: 'kr',
+    code: 'korea',
     cities: ['Seoul', 'Busan'],
     flag: '🇰🇷',
   },
   {
     name: 'Japan',
-    code: 'jp',
+    code: 'japan',
     cities: ['Tokyo', 'Osaka', 'Kyoto'],
     flag: '🇯🇵',
   },
