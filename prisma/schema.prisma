@@ -2,69 +2,338 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-    provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-    provider = "mysql"
-    // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
-    // Further reading:
-    // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
-    // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
-    url      = env("DATABASE_URL")
-    relationMode = "prisma"
-}
-
-model Example {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  provider     = "mysql"
+  // NOTE: When using postgresql, mysql or sqlserver, uncomment the @db.Text annotations in model Account below
+  // Further reading:
+  // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
+  // https://www.prisma.io/docs/reference/api-reference/prisma-schema-reference#string
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
 }
 
 // Necessary for Next auth
 model Account {
-    id                String  @id @default(cuid())
-    userId            String
-    type              String
-    provider          String
-    providerAccountId String
-    refresh_token     String?  @db.Text
-    access_token      String?  @db.Text
-    expires_at        Int?
-    token_type        String?
-    scope             String?
-    id_token          String?  @db.Text
-    session_state     String?
-    user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@unique([provider, providerAccountId])
-    @@index([userId])
+  @@unique([provider, providerAccountId])
+  @@index([userId])
 }
 
 model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    @@index([userId])
+  @@index([userId])
+}
+
+enum UserRole {
+  ADMIN
+  USER
+  OWNER
+  PROMTER
 }
 
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
+  id              String            @id @default(cuid())
+  name            String?
+  email           String?           @unique
+  emailVerified   DateTime?
+  image           String?
+  coins      Float             @default(0)
+  role            UserRole          @default(USER)
+  accounts        Account[]
+  sessions        Session[]
+  userItineraries UserItineraries[]
+  visits          Visit[]
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
+}
+
+enum VenueType {
+  BAR
+  LOUNGE
+  NIGHTCLUB
+  RAVE
+  FESTIVAL
+  PUB
+}
+
+model SocialMedia {
+  id        Int      @id @default(autoincrement())
+  venue     Venue?   @relation(fields: [venueId], references: [id])
+  venueId   Int
+  event     Event?   @relation(fields: [eventId], references: [id])
+  eventId   Int?
+  facebook  String?
+  twitter   String?
+  instagram String?
+  snapchat  String?
+  tiktok    String?
+  youtube   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([venueId])
+  @@index([eventId])
+}
+
+model Venue {
+  id                   Int             @id @default(autoincrement())
+  name                 String
+  address              String
+  type                 VenueType
+  city                 String
+  country              String
+  phone                String?
+  website              String?
+  zipCode              String?
+  latitude             Float?
+  longitude            Float?
+  rating               Float
+  photo                String
+  capacity             Int?
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  visits               Visit[]
+  events               Event[]
+  averageDrinkPrice    Float
+  averageEntryFee      Float
+  averageBeerPrice     Float
+  averageWinePrice     Float
+  averageCocktailPrice Float
+  venueMenuItems       MenuItem[]
+  ItineraryItem        ItineraryItem[]
+  venueGenre           VenueGenre[]
+  SocialMedia          SocialMedia[]
+
+  @@index([name])
+  @@index([city])
+  @@index([country])
+  @@index([rating])
+}
+
+model Visit {
+  id         Int      @id @default(autoincrement())
+  venue      Venue    @relation(fields: [venueId], references: [id])
+  venueId    Int
+  rating     Float?
+  user       User     @relation(fields: [userId], references: [id])
+  userId     String
+  userReview String?
+  userPhoto  String?
+  userReward Float? // this is the amount of money the user gets back
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([venueId])
+  @@index([userId])
+}
+
+model UserItineraries {
+  id          Int       @id @default(autoincrement())
+  itinerary   Itinerary @relation(fields: [itineraryId], references: [id])
+  itineraryId Int
+  user        User      @relation(fields: [userId], references: [id])
+  userId      String
+
+  @@index([itineraryId])
+  @@index([userId])
+}
+
+model Itinerary {
+  id              Int               @id @default(autoincrement())
+  title           String
+  description     String
+  startDate       DateTime
+  endDate         DateTime
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  ItineraryItem   ItineraryItem[]
+  userItineraries UserItineraries[]
+}
+
+model ItineraryItem {
+  id          Int       @id @default(autoincrement())
+  itineraryId Int
+  itinerary   Itinerary @relation(fields: [itineraryId], references: [id])
+  venue       Venue?    @relation(fields: [venueId], references: [id])
+  venueId     Int?
+  event       Event?    @relation(fields: [eventId], references: [id])
+  eventId     Int?
+  arriveTime  DateTime
+  leaveTime   DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([itineraryId])
+  @@index([venueId])
+  @@index([eventId])
+}
+
+enum parentMusicGenre {
+  ROCK
+  POP
+  HIP_HOP
+  RNB
+  COUNTRY
+  JAZZ
+  BLUES
+  FOLK
+  CLASSICAL
+  REGGAE
+  METAL
+  ELECTRONIC
+  WORLD
+}
+
+enum mainMusicGenre {
+  TECHNO
+  HOUSE
+  TRANCE
+  DANCE
+  DRUM_AND_BASS
+  AMBIENT
+  INDUSTRIAL
+  BREAKBEAT
+  JUNGLE
+  TRIP_HOP
+  DUBSTEP
+  HARDSTYLE
+  HARDCORE
+  GABBER
+  FUNK
+  SOUL
+  RAP
+  JP_HIP_HOP
+  JP_POP
+  JP_ROCK
+  JP_RNB
+  JP_FOLK
+  JP_CLASSICAL
+  JP_REGGAE
+  KR_HIP_HOP
+  KR_POP
+  KR_ROCK
+}
+
+model Genre {
+  id          Int              @id @default(autoincrement())
+  parentGenre parentMusicGenre
+  mainGenre   mainMusicGenre
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  eventGenre  EventGenre[]
+  venueGenre  VenueGenre[]
+}
+
+model VenueGenre {
+  id        Int      @id @default(autoincrement())
+  venueId   Int
+  venue     Venue    @relation(fields: [venueId], references: [id])
+  genreId   Int
+  genre     Genre    @relation(fields: [genreId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([venueId])
+  @@index([genreId])
+}
+
+model EventGenre {
+  id        Int      @id @default(autoincrement())
+  eventId   Int
+  event     Event    @relation(fields: [eventId], references: [id])
+  genreId   Int
+  genre     Genre    @relation(fields: [genreId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventId])
+  @@index([genreId])
+}
+
+model EventTag {
+  id        Int      @id @default(autoincrement())
+  eventId   Int
+  event     Event    @relation(fields: [eventId], references: [id])
+  color     String
+  label     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([eventId])
+}
+
+model Event {
+  id                   Int             @id @default(autoincrement())
+  name                 String
+  description          String
+  date                 DateTime
+  venue                Venue           @relation(fields: [venueId], references: [id])
+  venueId              Int
+  rating               Float
+  createdAt            DateTime        @default(now())
+  updatedAt            DateTime        @updatedAt
+  menuItems            MenuItem[]
+  averageDrinkPrice    Float
+  averageBeerPrice     Float
+  averageWinePrice     Float
+  averageCocktailPrice Float
+  entryFee             String
+  ItineraryItem        ItineraryItem[]
+  EventGenre           EventGenre[]
+  SocialMedia          SocialMedia[]
+  EventTag             EventTag[]
+
+  @@index([venueId])
+  @@index([rating])
+}
+
+enum MenuItemType {
+  BEER
+  WINE
+  COCKTAIL
+  FOOD
+}
+
+model MenuItem {
+  id          Int          @id @default(autoincrement())
+  name        String
+  description String?
+  type        MenuItemType
+  price       Float
+  venue       Venue?       @relation(fields: [venueId], references: [id])
+  venueId     Int?
+  event       Event?       @relation(fields: [eventId], references: [id])
+  eventId     Int?
+
+  @@index([venueId])
+  @@index([eventId])
 }

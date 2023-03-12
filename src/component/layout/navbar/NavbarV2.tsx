@@ -20,12 +20,13 @@ import {
   Collapse,
   Hide,
   useBreakpointValue,
+  SkeletonCircle,
 } from '@chakra-ui/react';
 import { MoonIcon, SunIcon } from '@chakra-ui/icons';
 import { signOut, useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import { useLoginModal } from '@/component/modals/login/LoginModal';
-import { Session } from 'next-auth';
+import type { Session } from 'next-auth';
 import NextLink from 'next/link';
 import AppIcon from './AppIcon';
 
@@ -89,7 +90,7 @@ const ProfileMenu = ({ session }: { session: Session }) => {
         <br />
         <Center>
           <Avatar
-            size={'2xl'}
+            size={'lg'}
             src={
               session.user.image ??
               'https://avatars.dicebear.com/api/male/username.svg'
@@ -119,6 +120,7 @@ const ProfileMenu = ({ session }: { session: Session }) => {
 
 const ProfileOrLogin = () => {
   const { data: session, status } = useSession();
+  if (status === 'loading') return <SkeletonCircle size="8" my="auto" />;
   if (!session) return <LoginBTN />;
   return <ProfileMenu session={session} />;
 };

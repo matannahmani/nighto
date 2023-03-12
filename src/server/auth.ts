@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import type { GetServerSidePropsContext } from 'next';
 import {
   getServerSession,
@@ -10,6 +11,7 @@ import EmailProvider from 'next-auth/providers/email';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { env } from '../env.mjs';
 import { prisma } from './db';
+import type { UserRole } from '@prisma/client';
 
 /**
  * Module augmentation for `next-auth` types.
@@ -23,14 +25,14 @@ declare module 'next-auth' {
     user: {
       id: string;
       // ...other properties
-      // role: UserRole;
+      role: UserRole;
     } & DefaultSession['user'];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User {
+    // ...other properties
+    role: UserRole;
+  }
 }
 
 /**
@@ -44,6 +46,7 @@ export const authOptions: NextAuthOptions = {
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
+        session.user.role = user?.role;
         // session.user.role = user.role; <-- put other properties on the session here
       }
       return session;
