@@ -1,4 +1,4 @@
-import { ChakraTheme, extendBaseTheme } from '@chakra-ui/react';
+import { ChakraTheme, extendBaseTheme, ThemeConfig } from '@chakra-ui/react';
 import { extendTheme, theme as baseTheme } from '@chakra-ui/react';
 import { CalendarDefaultTheme } from '@uselessdev/datepicker';
 
@@ -162,13 +162,12 @@ const colors = {
     '900': '#2507ce',
   },
 };
+const extraTheme: ThemeConfig = {
+  initialColorMode: 'dark',
+  useSystemColorMode: false,
+};
 
-export const theme = extendBaseTheme(
-  {
-    colors,
-    initialColorMode: 'dark',
-    useSystemColorMode: false,
-  },
+export const theme = extendTheme(
   CalendarDefaultTheme as Record<string, string>,
   {
     components: {
@@ -186,5 +185,9 @@ export const theme = extendBaseTheme(
         },
       },
     },
+  },
+  {
+    colors,
+    config: extraTheme,
   }
 ) as ChakraTheme;

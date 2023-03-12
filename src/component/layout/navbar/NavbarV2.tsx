@@ -228,11 +228,11 @@ export default function NavbarV2() {
           </HStack>
           <Flex alignItems={'center'}>
             <Stack direction={'row'} spacing={7}>
-              {isMD && (
+              {/* {isMD && (
                 <Button onClick={toggleColorMode}>
                   {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
                 </Button>
-              )}
+              )} */}
               <Flex>
                 <ProfileOrLogin />
               </Flex>
@@ -254,11 +254,11 @@ export default function NavbarV2() {
                     </NavLink>
                   );
               })}
-              <Button w="min-content" onClick={toggleColorMode}>
+              {/* <Button w="min-content" onClick={toggleColorMode}>
                 {colorMode === 'light' ? 'Dark' : 'Light'}
                 &nbsp;&nbsp;
                 {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-              </Button>
+              </Button> */}
             </Stack>
           </Box>
         </Collapse>

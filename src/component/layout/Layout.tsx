@@ -1,4 +1,4 @@
-import { Flex, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Flex, useBreakpointValue } from '@chakra-ui/react';
 import type { ReactElement } from 'react';
 import Footer from './footer/Footer';
 import NavbarV2, { NavbarHeight } from './navbar/NavbarV2';
@@ -23,9 +23,6 @@ const AnimatePhone = ({ children }: { children: ReactElement }) => {
         transition={{ duration: 0.1, ease: 'easeInOut' }}
         style={{
           flex: 1,
-          marginTop: NavbarHeight * 4,
-          paddingTop: 8,
-          paddingBottom: 8,
         }}
       >
         {children}
@@ -39,7 +36,14 @@ const Layout = ({ children }: { children: ReactElement }) => {
     <>
       <Flex overflowX={'hidden'} flexDirection="column" minH={'100vh'}>
         <NavbarV2 />
-        <AnimatePhone>{children}</AnimatePhone>
+        <Box
+          sx={{
+            marginTop: NavbarHeight,
+            py: 2,
+          }}
+        >
+          <AnimatePhone>{children}</AnimatePhone>
+        </Box>
 
         <Footer />
       </Flex>

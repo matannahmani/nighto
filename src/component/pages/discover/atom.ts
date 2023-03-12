@@ -45,7 +45,7 @@ export const getDiscovery = () => {
   } catch (err) {}
   return {
     date: new Date(),
-    country: 'kr',
+    country: 'korea',
     city: 'Seoul',
   };
 };

@@ -60,15 +60,13 @@ const MyApp: AppType<{ session: Session | null }> = ({
         />
       </Head>
       <ChakraProvider theme={theme}>
-        <NoSSR>
-          <SessionProvider session={session}>
-            <SSRProvider>
-              <Layout>
-                <Component {...pageProps} />
-              </Layout>
-            </SSRProvider>
-          </SessionProvider>
-        </NoSSR>
+        <SessionProvider session={session}>
+          <SSRProvider>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </SSRProvider>
+        </SessionProvider>
       </ChakraProvider>
     </>
   );
