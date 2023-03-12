@@ -30,7 +30,7 @@ const discoverAtom = atomWithStorage<discoverZ>(
   'location',
   {
     date: new Date(),
-    country: 'kr',
+    country: 'korea',
     city: 'Seoul',
   },
   cookieStorage

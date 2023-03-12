@@ -1,21 +1,17 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import { EmailIcon, PhoneIcon } from '@chakra-ui/icons';
 import {
   Flex,
   IconButton,
   Input,
   InputGroup,
-  InputLeftElement,
   InputRightElement,
   ModalCloseButton,
-  Spinner,
 } from '@chakra-ui/react';
 import {
   Stack,
   Button,
   Image,
   Text,
-  Icon,
   Modal,
   ModalContent,
   ModalOverlay,

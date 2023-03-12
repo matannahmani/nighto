@@ -5,6 +5,7 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "analyze": "ANALYZE=true next build",
     "postinstall": "prisma generate",
     "lint": "next lint",
     "theme": "chakra-cli tokens src/theme/theme.ts",

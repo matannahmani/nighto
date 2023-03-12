@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 // @ts-check
 
 /**
@@ -5,7 +6,10 @@
  * This is especially useful for Docker builds.
  */
 !process.env.SKIP_ENV_VALIDATION && (await import('./src/env.mjs'));
-
+import withBundleAnalyzerBase from '@next/bundle-analyzer';
+const withBundleAnalyzer = withBundleAnalyzerBase({
+  enabled: process.env.ANALYZE === 'true',
+});
 /** @type {import("next").NextConfig} */
 const config = {
   reactStrictMode: true,
@@ -21,4 +25,4 @@ const config = {
     defaultLocale: 'en',
   },
 };
-export default config;
+export default withBundleAnalyzer(config);
