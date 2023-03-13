@@ -138,6 +138,7 @@ model Venue {
   venueGenre           VenueGenre[]
   SocialMedia          SocialMedia[]
 
+  @@index([longitude,latitude])
   @@index([name])
   @@index([city])
   @@index([country])

@@ -4,8 +4,7 @@ import { City, countryList } from './component/pages/discover/countryList';
 
 // function to extract geo location from NextRequest
 function getGeoLocation(request: NextRequest) {
-  request.geo?.city;
-  request.geo?.country;
+  console.log(request?.geo?.region);
   const targetCountry = countryList.find(
     (country) => country.code === request.geo?.country?.toLowerCase()
   );
@@ -32,7 +31,6 @@ function getGeoLocation(request: NextRequest) {
 export function middleware(request: NextRequest) {
   // Get the geo location from the request
   const geo = getGeoLocation(request);
-  console.log(geo);
   // if the request has geo location, check if geo location is in the list of countries
   if (geo.hasGeo && geo.inList) {
     // if the geo location is in the list, set cookie
