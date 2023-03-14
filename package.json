@@ -32,6 +32,7 @@
     "framer-motion": "^6.5.1",
     "jotai": "^2.0.3",
     "jotai-optics": "^0.3.0",
+    "lottie-react": "^2.4.0",
     "next": "^13.2.4",
     "next-auth": "^4.20.1",
     "next-images": "^1.8.4",
@@ -45,6 +46,7 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.7.1",
     "react-stately": "^3.20.0",
+    "react-type-animation": "^2.1.2",
     "superjson": "^1.12.2",
     "universal-cookie": "^4.0.4",
     "zod": "^3.20.2"

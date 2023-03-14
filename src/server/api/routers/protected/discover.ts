@@ -5,17 +5,10 @@
 import { prisma } from '@/server/db';
 import type { VenueType } from '@prisma/client';
 import { mainMusicGenre } from '@prisma/client';
+import { Configuration, OpenAIApi } from 'openai';
 import { z } from 'zod';
 
 import { createTRPCRouter, publicProcedure } from '../../trpc';
-
-const retreiveZod = z
-  .object({
-    country: z.string().min(0).max(64),
-    city: z.string().min(0).max(128),
-    genre: z.string().optional(),
-  })
-  .optional();
 
 const byPromptZod = z.object({
   genre: z.nativeEnum(mainMusicGenre).array(),
@@ -44,8 +37,12 @@ const byPromptZod = z.object({
 
 type mainMusicGenreString = keyof typeof mainMusicGenre;
 
-function resultToPromptText(data: getPromptResult[][]) {
+function resultToPromptText(
+  data: getPromptResult[][],
+  input: z.infer<typeof byPromptZod>
+) {
   const genreMap = new Map<mainMusicGenreString, number>();
+  const nameMap = new Map<number, string>();
   const typeMap = new Map<VenueType, number>();
   /**
    * ratingMap is used to calculate rating of each venue
@@ -60,6 +57,8 @@ function resultToPromptText(data: getPromptResult[][]) {
    */
   const distanceMap = new Map<string, number>();
   data.flat().forEach((entry) => {
+    nameMap.set(entry.n_id, entry.n_n);
+    nameMap.set(entry.p_id, entry.p_n);
     genreMap.set(entry.g, (genreMap.get(entry.g) || 0) + 1);
     typeMap.set(entry.t, (typeMap.get(entry.t) || 0) + 1);
     ratingMap.set(entry.n_id, entry.r);
@@ -76,97 +75,105 @@ function resultToPromptText(data: getPromptResult[][]) {
   const ratingText = Array.from(ratingMap.entries())
     .map(([id, rating]) => `${id} -> ${rating}`)
     .join(', ');
+  const nameText = Array.from(nameMap.entries())
+    .map(([id, name]) => `${id} -> ${name}`)
+    .join(', ');
   const distanceText = Array.from(distanceMap.entries())
     .map(([id, distance]) => `${id} ${distance}`)
     .join(', ');
   const datasetText = `genre : ${genreText} venue-type : ${typeText} rating : ${ratingText} distance : ${distanceText}`;
-  const gptPrompt = `Make an itinerary for a night based on the following dataset:
-  keyword: distance below 3000, rating above 4, genre: TECHNO
-  dataset text follows a strict format of "[id] -> [result]
-  return only JSON format array of entries with keys of "id", "start_time", "end_time"
-  ${datasetText}`;
-  return gptPrompt;
+  const systemPrompt = `I have a dataset of venues with the following information:
+  the format is: [id] -> [value], for distance it is [id1]->[id2] [distance]
+    name: ${nameText}
+    genre: ${genreText}
+    venue-type: ${typeText}
+    rating: ${ratingText}
+    distance: ${distanceText}
+    `;
+  const userPrompt = `make an itinerary for a night using the provided dataset, my preferences are:
+    genre: ${input.genre.join(',')}
+    distance: ${input.maxDistance * 1000}
+    venue-type: ${input.venuePreference.join(',')}
+    and im ${input.groupType}`;
+  return {
+    system: systemPrompt,
+    user: userPrompt,
+  };
 }
 
 type getPromptResult = {
   p_id: number; /// parent id
   p_t: VenueType; /// parent type
+  p_n: string; /// parent name
   p_r: number; /// parent rating
   p_g: mainMusicGenreString; /// parent genre
   n_id: number; /// id
-  n: string; /// name
+  n_n: string; /// name
   r: number; /// rating
   t: VenueType; /// type
   g: mainMusicGenreString; /// genre
   d: number; /// distance in meters
 };
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
+
+function extractJSONFromString(str: string) {
+  const start = str.indexOf('{');
+  const end = str.lastIndexOf('}') + 1;
+  return JSON.parse(str.substring(start, end));
+}
+
+const aiResponseZod = z.object({
+  venueList: z.array(
+    z.object({
+      id: z.number(),
+      enterTime: z.string(),
+      leaveTime: z.string(),
+    })
+  ),
+  explanation: z.string(),
+});
+
+const generateAI = async (prompt: { system: string; user: string }) => {
+  const completion = await openai.createChatCompletion({
+    model: 'gpt-3.5-turbo',
+    messages: [
+      {
+        role: 'system',
+        content: `During this conversation you will only responed in the following format:
+          JSON: { "venueList": [{id: number,enterTime: string,leaveTime: string}], "explanation": string }
+          `,
+      },
+      {
+        role: 'system',
+        content: prompt.system,
+      },
+      {
+        role: 'user',
+        content: prompt.user,
+      },
+    ],
+  });
+  const raw = completion?.data?.choices?.[0]?.message?.content?.trim() ?? '';
+  try {
+    return {
+      result: aiResponseZod.parse(extractJSONFromString(raw)),
+      raw,
+      code: 0,
+    };
+  } catch (e) {
+    console.error("can't parse ai response", e);
+    return { result: null, raw, code: -1 };
+  }
+};
 
 /**
  * This is event router for public API
  */
-export const discoverRouter = createTRPCRouter({
-  retreive: publicProcedure.input(retreiveZod).query(async ({ input }) => {
-    const toppestRatedBarsPromise = prisma.venue.findMany({
-      ...(input && {
-        where: {
-          city: input.city,
-          country: input.country,
-          type: {
-            in: ['BAR', 'PUB', 'LOUNGE'],
-          },
-        },
-      }),
-      take: 10,
-      orderBy: {
-        rating: 'desc',
-      },
-      include: {
-        venueGenre: {
-          include: {
-            genre: true,
-          },
-        },
-      },
-    });
-    const toppestRatedClubsPromise = prisma.venue.findMany({
-      ...(input && {
-        where: {
-          city: input.city,
-          country: input.country,
-          type: {
-            in: ['NIGHTCLUB', 'RAVE'],
-          },
-        },
-      }),
-      take: 10,
-      orderBy: {
-        rating: 'desc',
-      },
-      include: {
-        venueGenre: {
-          include: {
-            genre: true,
-          },
-        },
-      },
-    });
-    const [toppestRatedBars, toppestRatedClubs] = await Promise.all([
-      toppestRatedBarsPromise,
-      toppestRatedClubsPromise,
-    ]);
-    /**
-     * remove duplicates
-     */
-    const nearest = [...toppestRatedBars, ...toppestRatedClubs]
-      .filter((v, i, a) => a.findIndex((t) => t.id === v.id) === i)
-      .sort((a, b) => b.rating - a.rating);
-    return {
-      nearest,
-      clubs: toppestRatedClubs,
-      bars: toppestRatedBars,
-    };
-  }),
-  byPrompt: publicProcedure.input(byPromptZod).query(async ({ input }) => {
+export const protectedDiscoverRouter = createTRPCRouter({
+  generate: publicProcedure.input(byPromptZod).mutation(async ({ input }) => {
     const toppestRatedBarsPromise = prisma.venue.findMany({
       ...(input && {
         where: {
@@ -239,8 +246,10 @@ export const discoverRouter = createTRPCRouter({
           SELECT 
           v1.id AS p_id,
           v1.type as p_t,
+        v1.name as p_n,
           v1.rating as p_r, 
-          v2.id AS n_id, 
+          v2.id AS n_id,
+        v2.name as n_n,
           v2.type as t,
           v2.rating as r, 
           CAST(ST_Distance_Sphere(
@@ -267,7 +276,11 @@ export const discoverRouter = createTRPCRouter({
         `
       )
     );
-    console.log('query time', new Date().getTime() - now.getTime(), 'ms');
-    return resultToPromptText(result);
+    console.log(result);
+    const prompt = resultToPromptText(result, input);
+    const nowBeforeAI = new Date();
+    const aiResult = await generateAI(prompt);
+    console.log('ai time', new Date().getTime() - nowBeforeAI.getTime(), 'ms');
+    return aiResult;
   }),
 });

@@ -15,6 +15,11 @@ import { stageAtom, canMoveAtom, priceAtom } from '../atom';
 
 function IteneraryPriceBody() {
   const stage = useAtomValue(stageAtom);
+  if (stage !== 2) return null;
+  return <IteneraryPriceBodyComp />;
+}
+
+function IteneraryPriceBodyComp() {
   const setMove = useSetAtom(canMoveAtom);
 
   const [price, setPrice] = useAtom(priceAtom);
@@ -24,10 +29,11 @@ function IteneraryPriceBody() {
   useEffect(() => {
     setMove(!!price);
   }, [price]);
-  if (stage !== 2) return null;
   return (
     <>
-      <ModalHeader fontSize="3xl">Let’s be more specific</ModalHeader>
+      <ModalHeader py="0" fontSize="3xl">
+        Let’s be more specific
+      </ModalHeader>
       <ModalBody>
         <Text mb={4} color="gray.500">
           How much are you willing to spend
@@ -41,6 +47,7 @@ function IteneraryPriceBody() {
         >
           <VStack spacing={2} alignItems="flex-start">
             <Tooltip
+              hasArrow
               label="Cheap entry and drinks (25-75$ a night)"
               placement="top-end"
             >
@@ -51,6 +58,7 @@ function IteneraryPriceBody() {
             </Tooltip>
             <Divider />
             <Tooltip
+              hasArrow
               label="Fair entry and drinks (50-100$ a night)"
               placement="top-end"
             >
@@ -61,6 +69,7 @@ function IteneraryPriceBody() {
             </Tooltip>{' '}
             <Divider />
             <Tooltip
+              hasArrow
               label="Expensive entry and drinks (100$+)"
               placement="top-end"
             >
@@ -70,6 +79,7 @@ function IteneraryPriceBody() {
               </div>
             </Tooltip>{' '}
             <Divider />
+            hasArrow
             <Tooltip label="NO limit" placement="top-end">
               <div>
                 <Radio value={'4'}>$$$$</Radio>

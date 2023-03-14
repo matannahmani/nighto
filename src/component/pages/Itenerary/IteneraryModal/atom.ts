@@ -1,15 +1,9 @@
 import { atom } from 'jotai';
 import { focusAtom } from 'jotai-optics';
 import type { RouterInputs } from '@/utils/api';
-type IteneraryPrompt = RouterInputs['discover']['byPrompt'];
-export const IteneraryAtom = atom<
-  {
-    open: boolean;
-    canMove: boolean;
-    stage: 0 | 1 | 2 | 3 | 4 | 5;
-  } & Partial<IteneraryPrompt>
->({
-  open: true,
+export type IteneraryPrompt = RouterInputs['discover']['byPrompt'];
+export const IteneraryAtomBase = {
+  open: false,
   stage: 0,
   canMove: false,
   price: undefined,
@@ -17,7 +11,14 @@ export const IteneraryAtom = atom<
   venuePreference: undefined,
   genre: undefined,
   groupType: undefined,
-});
+} as const;
+export const IteneraryAtom = atom<
+  {
+    open: boolean;
+    canMove: boolean;
+    stage: 0 | 1 | 2 | 3 | 4 | 5;
+  } & Partial<IteneraryPrompt>
+>(IteneraryAtomBase);
 export const canMoveAtom = focusAtom(IteneraryAtom, (optic) =>
   optic.prop('canMove')
 );

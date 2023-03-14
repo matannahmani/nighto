@@ -47,19 +47,23 @@ const Bubble = ({
 
 function IteneraryGenreBody() {
   const stage = useAtomValue(stageAtom);
+  if (stage !== 1) return null;
+  return <IteneraryGenreBodyComp />;
+}
+
+function IteneraryGenreBodyComp() {
   const setMove = useSetAtom(canMoveAtom);
 
   const [genre, setGenre] = useAtom(genreAtom);
-  const handlegenreChange = (v: string) => {
-    void setGenre(v as keyof typeof genre);
-  };
+
   useEffect(() => {
     setMove(!!(genre && genre?.length > 0));
-  }, [genre]);
-  if (stage !== 1) return null;
+  }, [genre, setMove]);
   return (
     <>
-      <ModalHeader fontSize="3xl">Genres</ModalHeader>
+      <ModalHeader py="0" fontSize="3xl">
+        Genres
+      </ModalHeader>
 
       <ModalBody>
         <Text mb={4} color="gray.500">

@@ -13,6 +13,11 @@ import { stageAtom, canMoveAtom, groupTypeAtom } from '../atom';
 
 function IteneraryTypeBody() {
   const stage = useAtomValue(stageAtom);
+  if (stage !== 0) return null;
+  return <IteneraryTypeBodyComp />;
+}
+
+function IteneraryTypeBodyComp() {
   const setMove = useSetAtom(canMoveAtom);
 
   const [groupType, setGroupType] = useAtom(groupTypeAtom);
@@ -22,10 +27,11 @@ function IteneraryTypeBody() {
   useEffect(() => {
     setMove(!!groupType);
   }, [groupType]);
-  if (stage !== 0) return null;
   return (
     <>
-      <ModalHeader fontSize="3xl">Let’s be more specific</ModalHeader>
+      <ModalHeader py="0" fontSize="3xl">
+        Let’s be more specific
+      </ModalHeader>
       <ModalBody>
         <Text mb={4} color="gray.500">
           Who are you spending the event with

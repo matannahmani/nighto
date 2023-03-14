@@ -1,10 +1,13 @@
-import { useAtom } from 'jotai';
-import { openAtom } from './atom';
+import { useAtom, useSetAtom } from 'jotai';
+import { IteneraryAtom, IteneraryAtomBase, openAtom } from './atom';
 
 const useItenaryModal = () => {
   const [isOpen, setOpen] = useAtom(openAtom);
+  const setItenerayAtom = useSetAtom(IteneraryAtom);
   const onOpen = () => setOpen(true);
-  const onClose = () => setOpen(false);
+  const onClose = () => {
+    setItenerayAtom(IteneraryAtomBase);
+  };
   return { isOpen, onOpen, onClose };
 };
 

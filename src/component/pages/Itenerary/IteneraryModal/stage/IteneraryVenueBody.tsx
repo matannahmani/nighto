@@ -8,12 +8,18 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useAtomValue, useSetAtom, useAtom } from 'jotai';
-import { MouseEvent, useMemo } from 'react';
+import type { MouseEvent } from 'react';
+import { useMemo } from 'react';
 import { useEffect } from 'react';
 import { stageAtom, canMoveAtom, venuePreferenceAtom } from '../atom';
 
 function IteneraryVenueBody() {
   const stage = useAtomValue(stageAtom);
+  if (stage !== 4) return null;
+  return <IteneraryVenueBodyComp />;
+}
+
+function IteneraryVenueBodyComp() {
   const setMove = useSetAtom(canMoveAtom);
 
   const [venuePref, setVenuePref] = useAtom(venuePreferenceAtom);
@@ -35,12 +41,13 @@ function IteneraryVenueBody() {
     [venuePref]
   );
   useEffect(() => {
-    setMove(!!venuePref);
+    setMove(!!(venuePref && venuePref?.length >= 1));
   }, [venuePref]);
-  if (stage !== 4) return null;
   return (
     <>
-      <ModalHeader fontSize="3xl">Let’s be more specific</ModalHeader>
+      <ModalHeader py="0" fontSize="3xl">
+        Let’s be more specific
+      </ModalHeader>
       <ModalBody>
         <Text mb={4} color="gray.500">
           What’ the tone of your night

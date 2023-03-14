@@ -1,3 +1,4 @@
+import { protectedDiscoverRouter } from './routers/protected/discover';
 import { createTRPCRouter } from './trpc';
 import { discoverRouter } from './routers/public/discover';
 
@@ -8,6 +9,9 @@ import { discoverRouter } from './routers/public/discover';
  */
 export const appRouter = createTRPCRouter({
   discover: discoverRouter,
+  protected: createTRPCRouter({
+    discover: protectedDiscoverRouter,
+  }),
 });
 
 // export type definition of API
