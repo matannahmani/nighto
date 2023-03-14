@@ -19,24 +19,26 @@ const retreiveZod = z
 const byPromptZod = z.object({
   genre: z.nativeEnum(mainMusicGenre).array(),
   city: z.string(),
-  maxEntryPrice: z
-    .literal(10)
-    .or(z.literal(20))
-    .or(z.literal(30))
-    .or(z.literal(50))
-    .or(z.literal(9999)),
-  maxDrinkPrice: z
-    .literal(10)
-    .or(z.literal(20))
-    .or(z.literal(30))
-    .or(z.literal(9999)),
-  maxDistance: z
-    .literal(1)
-    .or(z.literal(3))
-    .or(z.literal(5))
-    .or(z.literal(7))
-    .or(z.literal(25))
-    .or(z.literal(50)),
+  groupType: z
+    .literal('solo')
+    .or(z.literal('group'))
+    .or(z.literal('couple'))
+    .or(z.literal('wife/husband'))
+    .or(z.literal('singlefriend')),
+  price: z
+    .literal('1')
+    .or(z.literal('2'))
+    .or(z.literal('3'))
+    .or(z.literal('4')),
+  maxDistance: z.number().min(1).max(50),
+  venuePreference: z.array(
+    z
+      .literal('light')
+      .or(z.literal('packed'))
+      .or(z.literal('clubs'))
+      .or(z.literal('bars'))
+      .or(z.literal('lounges'))
+  ),
 });
 
 type mainMusicGenreString = keyof typeof mainMusicGenre;
@@ -157,45 +159,11 @@ export const discoverRouter = createTRPCRouter({
     const nearest = [...toppestRatedBars, ...toppestRatedClubs]
       .filter((v, i, a) => a.findIndex((t) => t.id === v.id) === i)
       .sort((a, b) => b.rating - a.rating);
-    const venueIds = nearest.map((v) => v.id);
-    const now = new Date();
-    const result = await Promise.all(
-      venueIds.map(
-        (id) =>
-          prisma.$queryRaw<getPromptResult[]>`
-          SELECT 
-          v1.id AS p_id,
-          v1.type as p_t,
-          v1.rating as p_r, 
-          v2.id AS n_id, 
-          v2.type as t,
-          v2.rating as r, 
-          CAST(ST_Distance_Sphere(
-              point(v1.longitude, v1.latitude), 
-              point(v2.longitude, v2.latitude)
-          ) AS SIGNED) AS d,
-          g.mainGenre as g
-      FROM 
-          Venue v1 
-          JOIN Venue v2 ON v1.id = ${id} AND v1.id != v2.id
-          JOIN VenueGenre vg ON v2.id = vg.venueId
-          JOIN Genre g ON vg.genreId = g.id
-      WHERE 
-          ST_Distance_Sphere(
-              point(v1.longitude, v1.latitude), 
-              point(v2.longitude, v2.latitude)
-          ) < ${25 * 1000} -- meters
-      ORDER BY 
-          v1.id, 
-          d, 
-          r DESC 
-      LIMIT 
-          5;
-        `
-      )
-    );
-    console.log('query time', new Date().getTime() - now.getTime(), 'ms');
-    return resultToPromptText(result);
+    return {
+      nearest,
+      clubs: toppestRatedClubs,
+      bars: toppestRatedBars,
+    };
   }),
   byPrompt: publicProcedure.input(byPromptZod).query(async ({ input }) => {
     const toppestRatedBarsPromise = prisma.venue.findMany({
@@ -203,10 +171,10 @@ export const discoverRouter = createTRPCRouter({
         where: {
           city: input.city,
           averageEntryFee: {
-            lte: input.maxEntryPrice,
+            lte: input.price === '4' ? 9999 : Number(input.price) * 15,
           },
           averageDrinkPrice: {
-            lte: input.maxDrinkPrice,
+            lte: input.price === '4' ? 9999 : Number(input.price) * 2 + 6,
           },
           venueGenre: {
             some: {
@@ -262,30 +230,26 @@ export const discoverRouter = createTRPCRouter({
     const venueIds = [...toppestRatedBars, ...toppestRatedClubs].map(
       (v) => v.id
     );
+    const now = new Date();
     const result = await Promise.all(
       venueIds.map(
         (id) =>
-          prisma.$queryRaw<{
-            parent_id: number;
-            near_id: number;
-            name: string;
-            rating: number;
-          }>`
+          prisma.$queryRaw<getPromptResult[]>`
           SELECT 
-          v1.id AS parent_id, 
-          v2.id AS near_id, 
-          v2.name, 
-          v2.type,
-          v2.rating, 
-          ST_Distance_Sphere(
+          v1.id AS p_id,
+          v1.type as p_t,
+          v1.rating as p_r, 
+          v2.id AS n_id, 
+          v2.type as t,
+          v2.rating as r, 
+          CAST(ST_Distance_Sphere(
               point(v1.longitude, v1.latitude), 
               point(v2.longitude, v2.latitude)
-          ) AS distance,
-          g.parentGenre,
-          g.mainGenre
+          ) AS SIGNED) AS d,
+          g.mainGenre as g
       FROM 
           Venue v1 
-          JOIN Venue v2 ON v1.id = ${id} AND v1.id != v2.id 
+          JOIN Venue v2 ON v1.id = ${id} AND v1.id != v2.id
           JOIN VenueGenre vg ON v2.id = vg.venueId
           JOIN Genre g ON vg.genreId = g.id
       WHERE 
@@ -295,16 +259,14 @@ export const discoverRouter = createTRPCRouter({
           ) < ${input.maxDistance * 1000} -- meters
       ORDER BY 
           v1.id, 
-          distance, 
-          rating DESC 
+          d, 
+          r DESC 
       LIMIT 
           5;
         `
       )
     );
-
-    // for each bar or club, search the ten nearest venues
-
-    return [];
+    console.log('query time', new Date().getTime() - now.getTime(), 'ms');
+    return resultToPromptText(result);
   }),
 });

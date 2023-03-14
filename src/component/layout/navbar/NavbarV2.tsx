@@ -1,4 +1,5 @@
-import { ReactNode, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Flex,
@@ -13,16 +14,14 @@ import {
   useDisclosure,
   useColorModeValue,
   Stack,
-  useColorMode,
   Center,
   IconButton,
   HStack,
   Collapse,
-  Hide,
   useBreakpointValue,
   SkeletonCircle,
 } from '@chakra-ui/react';
-import { MoonIcon, SunIcon } from '@chakra-ui/icons';
+import { AddIcon } from '@chakra-ui/icons';
 import { signOut, useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import { useLoginModal } from '@/component/modals/login/LoginModal';
@@ -159,11 +158,15 @@ const useNavbarScroll = () => {
 };
 
 export const NavbarHeight = 16;
+const IteneraryModal = dynamic(
+  () => import('@/component/pages/Itenerary/IteneraryModal'),
+  { ssr: false }
+);
 
 export default function NavbarV2() {
-  const { colorMode, toggleColorMode } = useColorMode();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { data: session } = useSession();
+  const { onOpen: onItenaryOpen } = useItenaryModal();
   const isMD = useBreakpointValue({ base: false, md: true });
   const visible = useNavbarScroll();
 
@@ -228,11 +231,19 @@ export default function NavbarV2() {
           </HStack>
           <Flex alignItems={'center'}>
             <Stack direction={'row'} spacing={7}>
-              {/* {isMD && (
-                <Button onClick={toggleColorMode}>
-                  {colorMode === 'light' ? <MoonIcon /> : <SunIcon />}
-                </Button>
-              )} */}
+              <Button
+                onClick={onItenaryOpen}
+                my="auto"
+                leftIcon={<AddIcon />}
+                size={{
+                  base: 'xs',
+                  sm: 'sm',
+                }}
+                variant="outline"
+                colorScheme="purple"
+              >
+                Itenerary
+              </Button>
               <Flex>
                 <ProfileOrLogin />
               </Flex>
@@ -263,15 +274,15 @@ export default function NavbarV2() {
           </Box>
         </Collapse>
       </Box>
+      <IteneraryModal />
     </>
   );
 }
 
 import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
-import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { MdHome, MdSearch } from 'react-icons/md';
-import Cookies from 'universal-cookie';
 import { getDiscovery } from '@/component/pages/discover/atom';
+import useItenaryModal from '@/component/pages/Itenerary/IteneraryModal/useItenaryModal';
 
 type Link = {
   label: string;

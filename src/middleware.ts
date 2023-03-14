@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { City, countryList } from './component/pages/discover/countryList';
+import type { City } from './component/pages/discover/countryList';
+import { countryList } from './component/pages/discover/countryList';
 
 // function to extract geo location from NextRequest
 function getGeoLocation(request: NextRequest) {
-  console.log(request?.geo?.region);
   const targetCountry = countryList.find(
     (country) => country.code === request.geo?.country?.toLowerCase()
   );

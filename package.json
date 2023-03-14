@@ -8,8 +8,8 @@
     "analyze": "ANALYZE=true next build",
     "postinstall": "prisma generate",
     "lint": "next lint",
-    "theme": "chakra-cli tokens src/theme/theme.ts",
-    "theme:watch": "chakra-cli tokens src/theme/theme.ts --watch",
+    "theme": "chakra-cli tokens /src/theme/theme.ts",
+    "theme:watch": "chakra-cli tokens /src/theme/theme.ts --watch",
     "start": "next start"
   },
   "dependencies": {
