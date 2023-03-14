@@ -144,7 +144,7 @@ const generateAI = async (prompt: { system: string; user: string }) => {
         role: 'system',
         content: `During this conversation you will only responed in the following format:
           JSON: { "venueList": [{id: number,enterTime: string,leaveTime: string}], "explanation": string }
-          `,
+          IMPORTANT NOTE: explanation should be user friendly and non robotic`,
       },
       {
         role: 'system',
@@ -276,11 +276,14 @@ export const protectedDiscoverRouter = createTRPCRouter({
         `
       )
     );
-    console.log(result);
     const prompt = resultToPromptText(result, input);
     const nowBeforeAI = new Date();
     const aiResult = await generateAI(prompt);
     console.log('ai time', new Date().getTime() - nowBeforeAI.getTime(), 'ms');
-    return aiResult;
+    return {
+      ai: aiResult,
+      toppestRatedBars,
+      toppestRatedClubs,
+    };
   }),
 });

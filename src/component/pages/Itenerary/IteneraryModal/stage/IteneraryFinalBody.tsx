@@ -1,4 +1,4 @@
-import { ModalHeader, ModalBody, Text } from '@chakra-ui/react';
+import { ModalHeader, ModalBody, Text, Box } from '@chakra-ui/react';
 import { useAtomValue } from 'jotai';
 import Lottie from 'lottie-react';
 import { stageAtom } from '../atom';
@@ -8,21 +8,31 @@ import type { useGenerateIteneraryReturn } from '../Header';
 import { useGenerateItenerary } from '../Header';
 import type { RouterOutputs } from '@/utils/api';
 import { api } from '@/utils/api';
+import { DiscoverCard } from '@/pages/[country]/[city]/discover';
+import Carousel from '@/component/common/Carousel';
 
 type IteneraryAIRes = RouterOutputs['protected']['discover']['generate'];
 
 function ItenerarySuccessBody(props: IteneraryAIRes) {
+  const aiVenues = props.ai.result?.venueList.map((v) => v.id);
+  const clubsList = props.toppestRatedClubs.filter(
+    (club) => aiVenues?.includes(club.id) ?? false
+  );
+  const barsList = props.toppestRatedBars.filter(
+    (bar) => aiVenues?.includes(bar.id) ?? false
+  );
+  const toShow = [...clubsList, ...barsList];
   return (
     <>
       <ModalHeader py="0" fontSize="3xl">
         Generated your itenerary!
       </ModalHeader>
       <ModalBody>
-        <Text mb={4} color="white">
-          Here&apos;s your itenerary:
-          <br />
+        <Text h={'200px'} overflowY="auto" mb={4} color="white">
           <TypeAnimation
-            sequence={[props.result?.explanation ?? 'No explanation available']}
+            sequence={[
+              props.ai.result?.explanation ?? 'No explanation available',
+            ]}
             wrapper="span"
             cursor={false}
             speed={80}
@@ -32,6 +42,18 @@ function ItenerarySuccessBody(props: IteneraryAIRes) {
             repeat={0}
           />
         </Text>
+        <Carousel>
+          {toShow?.map((venue) => (
+            <Box
+              key={venue.id}
+              display="flex!important"
+              justifyContent="center!important"
+              alignItems="center!important"
+            >
+              <DiscoverCard {...venue} />
+            </Box>
+          ))}
+        </Carousel>
       </ModalBody>
     </>
   );

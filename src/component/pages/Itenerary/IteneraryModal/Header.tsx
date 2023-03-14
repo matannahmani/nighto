@@ -76,7 +76,7 @@ const Header = (props: useGenerateIteneraryReturn) => {
             return s + 1;
           });
         }}
-        isDisabled={!canMove || stage === 5}
+        isDisabled={!canMove || (stage === 5 && !mutation.isSuccess)}
         isLoading={mutation.isLoading}
         size="md"
         ml="auto"
@@ -84,7 +84,8 @@ const Header = (props: useGenerateIteneraryReturn) => {
         variant="ghost"
         color="purple.400"
       >
-        {stage === 4 ? 'Generate' : 'Next'}
+        {mutation.isSuccess && 'View itenerary'}
+        {!mutation.isSuccess ? (stage === 4 ? 'Generate' : 'Next') : undefined}
       </Button>
     </ModalHeader>
   );

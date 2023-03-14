@@ -197,17 +197,8 @@ export default function NavbarV2() {
             onClick={isOpen ? onClose : onOpen}
           />
 
-          <Box
-            mx={{
-              base: 'auto',
-              md: 0,
-            }}
-          >
-            <AppIcon
-              fill={useColorModeValue('gray.800', 'white')}
-              width={120}
-              height={54}
-            />
+          <Box mr="auto" ml="4">
+            <AppIcon fill={useColorModeValue('gray.800', 'white')} />
           </Box>
           <HStack
             display={{ base: 'none', md: 'flex' }}

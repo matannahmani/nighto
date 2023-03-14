@@ -96,7 +96,7 @@ function TransportSlider() {
         min={1}
         colorScheme="teal"
         aria-label="slider-ex-6"
-        // value={maxDistance ?? 1}
+        value={maxDistance ?? 1}
         onTouchStart={() => setShowTooltip(true)}
         onTouchEnd={() => setShowTooltip(false)}
         onMouseEnter={() => setShowTooltip(true)}
