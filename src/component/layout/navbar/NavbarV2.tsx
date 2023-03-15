@@ -197,7 +197,13 @@ export default function NavbarV2() {
             onClick={isOpen ? onClose : onOpen}
           />
 
-          <Box mr="auto" ml="4">
+          <Box
+            mr={{
+              base: 'auto',
+              md: '0',
+            }}
+            ml="4"
+          >
             <AppIcon fill={useColorModeValue('gray.800', 'white')} />
           </Box>
           <HStack

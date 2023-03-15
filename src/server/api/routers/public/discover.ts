@@ -150,10 +150,40 @@ export const discoverRouter = createTRPCRouter({
         },
       },
     });
-    const [toppestRatedBars, toppestRatedClubs] = await Promise.all([
-      toppestRatedBarsPromise,
-      toppestRatedClubsPromise,
-    ]);
+    const toppestRatedEventsPromise = prisma.event.findMany({
+      where: {
+        venue: {
+          city: input?.city ?? '',
+          country: input?.country ?? '',
+        },
+        dateStart: {
+          gte: new Date(),
+        },
+      },
+      take: 10,
+      include: {
+        venue: true,
+        EventGenre: {
+          include: {
+            genre: true,
+          },
+        },
+      },
+      orderBy: [
+        {
+          rating: 'desc',
+        },
+        {
+          dateStart: 'asc',
+        },
+      ],
+    });
+    const [toppestRatedBars, toppestRatedClubs, toppestRatedEvents] =
+      await Promise.all([
+        toppestRatedBarsPromise,
+        toppestRatedClubsPromise,
+        toppestRatedEventsPromise,
+      ]);
     /**
      * remove duplicates
      */
@@ -164,6 +194,7 @@ export const discoverRouter = createTRPCRouter({
       nearest,
       clubs: toppestRatedClubs,
       bars: toppestRatedBars,
+      events: toppestRatedEvents,
     };
   }),
   byPrompt: publicProcedure.input(byPromptZod).query(async ({ input }) => {

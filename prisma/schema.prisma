@@ -302,7 +302,10 @@ model Event {
   id                   Int             @id @default(autoincrement())
   name                 String
   description          String
-  date                 DateTime
+  dateStart                 DateTime?
+  dateEnd                   DateTime?
+  startTime            String?
+  endTime              String?
   venue                Venue           @relation(fields: [venueId], references: [id])
   venueId              Int
   rating               Float

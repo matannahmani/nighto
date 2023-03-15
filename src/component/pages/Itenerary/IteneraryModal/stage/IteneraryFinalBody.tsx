@@ -5,10 +5,8 @@ import { stageAtom } from '../atom';
 import loadingAnimation from '@/../public/loading-music.json';
 import { TypeAnimation } from 'react-type-animation';
 import type { useGenerateIteneraryReturn } from '../Header';
-import { useGenerateItenerary } from '../Header';
 import type { RouterOutputs } from '@/utils/api';
-import { api } from '@/utils/api';
-import { DiscoverCard } from '@/pages/[country]/[city]/discover';
+import { VenueCard } from '@/component/pages/discover/DiscoverCard';
 import Carousel from '@/component/common/Carousel';
 
 type IteneraryAIRes = RouterOutputs['protected']['discover']['generate'];
@@ -50,7 +48,7 @@ function ItenerarySuccessBody(props: IteneraryAIRes) {
               justifyContent="center!important"
               alignItems="center!important"
             >
-              <DiscoverCard {...venue} />
+              <VenueCard {...venue} />
             </Box>
           ))}
         </Carousel>
