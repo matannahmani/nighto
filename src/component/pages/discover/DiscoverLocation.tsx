@@ -9,7 +9,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useAtom } from 'jotai';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { cityAtom, countryAtom } from './atom';
 import type { City } from './countryList';
 import { countryList } from './countryList';

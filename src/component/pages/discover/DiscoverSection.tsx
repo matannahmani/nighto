@@ -10,12 +10,10 @@ import {
   isVenue,
   VenueCard,
 } from './DiscoverCard';
-import type { RouterOutputs } from '@/utils/api';
 import type { DiscoverData } from './DiscoverCard';
-type data = RouterOutputs['discover']['retreive']['nearest'][number];
 const MutationPlugin: KeenSliderPlugin = (slider) => {
   const observer = new MutationObserver(function (mutations) {
-    mutations.forEach(function (mutation) {
+    mutations.forEach(function () {
       slider.update();
     });
   });
@@ -33,12 +31,14 @@ type DiscoverSectionT = {
   isLoading: boolean;
   href: string;
   data: DiscoverData[] | undefined;
+  hasPriority?: boolean;
 };
 export function DiscoverSection({
   title,
   data,
   isLoading,
   href,
+  hasPriority,
 }: DiscoverSectionT) {
   const router = useRouter();
   const [sliderRef] = useKeenSlider<HTMLDivElement>(
@@ -84,8 +84,8 @@ export function DiscoverSection({
           </Text>
         </Link>
       </HStack>
-      <Box my={4} className="keen-slider" ref={sliderRef}>
-        {isLoading ? (
+      <HStack spacing={4}>
+        {isLoading && (
           <>
             <DiscoverCardSkeleton />
 
@@ -95,18 +95,21 @@ export function DiscoverSection({
 
             <DiscoverCardSkeleton />
           </>
-        ) : (
+        )}
+      </HStack>
+      <Box my={4} className="keen-slider" ref={sliderRef}>
+        {!isLoading &&
           data?.map((venue, index) =>
             isVenue(venue) ? (
               <VenueCard
                 {...venue}
+                isPriority={hasPriority && index === 0}
                 key={`${title}-${venue.type}-${venue.id}`}
               />
             ) : (
               <EventCard {...venue} key={`${title}-event-${venue.id}`} />
             )
-          )
-        )}
+          )}
       </Box>
     </Flex>
   );

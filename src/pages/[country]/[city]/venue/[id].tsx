@@ -1,5 +1,3 @@
-import { RouterOutputs } from '@/utils/api';
-
 const VenuePage = () => {
   return <></>;
 };

@@ -16,7 +16,7 @@ import {
   SliderTrack,
 } from '@chakra-ui/react';
 import { useAtomValue, useSetAtom, useAtom } from 'jotai';
-import { memo, useEffect, useState, useTransition } from 'react';
+import { memo, useEffect, useState } from 'react';
 import { stageAtom, canMoveAtom, maxDistanceAtom } from '../atom';
 
 const labelStyles = {

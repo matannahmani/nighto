@@ -9,7 +9,6 @@ import {
   Box,
   HStack,
   Skeleton,
-  chakra,
   SkeletonText,
   Tag,
   TagLabel,
@@ -85,6 +84,7 @@ function DiscoverCardBase({
   imageTagsBottom,
   alt,
   link,
+  isPriority,
   width,
   height,
 }: {
@@ -94,6 +94,7 @@ function DiscoverCardBase({
   subtitle: ReactNode | string;
   alt: string;
   image: string;
+  isPriority?: boolean;
   imageTags?: ReactNode;
   imageTagsBottom?: ReactNode;
   width?: LayoutProps['width'];
@@ -121,6 +122,8 @@ function DiscoverCardBase({
         >
           <Box position="relative" w="100%" h={'auto'}>
             <Image
+              priority={isPriority}
+              loading={isPriority ? 'eager' : 'lazy'}
               src={image}
               // eslint-disable-next-line @typescript-eslint/ban-ts-comment
               // @ts-ignore
@@ -164,10 +167,11 @@ function DiscoverCardBase({
   );
 }
 
-export function VenueCard(props: club) {
+export function VenueCard(props: club & { isPriority?: boolean }) {
   const router = useRouter();
   return (
     <DiscoverCardBase
+      isPriority={props.isPriority}
       title={
         <>
           {props.rating && (

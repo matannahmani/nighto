@@ -1,16 +1,4 @@
-import {
-  ModalHeader,
-  ModalBody,
-  RadioGroup,
-  VStack,
-  Radio,
-  Divider,
-  Text,
-  Button,
-  Flex,
-  Alert,
-  AlertIcon,
-} from '@chakra-ui/react';
+import { ModalHeader, ModalBody, Text, Button, Flex } from '@chakra-ui/react';
 import { mainMusicGenre } from '@prisma/client';
 import { useAtomValue, useSetAtom, useAtom } from 'jotai';
 import { useEffect } from 'react';

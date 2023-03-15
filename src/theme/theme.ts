@@ -3,8 +3,7 @@ import type {
   ComponentStyleConfig,
   ThemeConfig,
 } from '@chakra-ui/react';
-import { extendBaseTheme } from '@chakra-ui/react';
-import { extendTheme, theme as baseTheme } from '@chakra-ui/react';
+import { extendTheme } from '@chakra-ui/react';
 import { CalendarDefaultTheme } from '@uselessdev/datepicker';
 
 import type { Colors } from '@chakra-ui/react';

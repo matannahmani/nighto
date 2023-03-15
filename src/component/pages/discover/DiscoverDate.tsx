@@ -1,8 +1,4 @@
-import NoSSR from '@/component/common/NoSSR';
-import { theme } from '@/theme';
 import {
-  ChakraProvider,
-  extendTheme,
   Popover,
   PopoverBody,
   PopoverContent,
@@ -14,7 +10,6 @@ import {
 import type { CalendarDate, CalendarValues } from '@uselessdev/datepicker';
 import {
   Calendar,
-  CalendarDefaultTheme,
   CalendarControls,
   CalendarPrevButton,
   CalendarNextButton,
@@ -24,9 +19,8 @@ import {
   CalendarWeek,
   CalendarDays,
 } from '@uselessdev/datepicker';
-import { format, isValid } from 'date-fns';
 import { useAtom } from 'jotai';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { dateAtom } from './atom';
 
 const isCalnderValues = (

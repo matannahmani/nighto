@@ -81,7 +81,6 @@ function resultToPromptText(
   const distanceText = Array.from(distanceMap.entries())
     .map(([id, distance]) => `${id} ${distance}`)
     .join(', ');
-  const datasetText = `genre : ${genreText} venue-type : ${typeText} rating : ${ratingText} distance : ${distanceText}`;
   const systemPrompt = `I have a dataset of venues with the following information:
   the format is: [id] -> [value], for distance it is [id1]->[id2] [distance]
     name: ${nameText}
@@ -238,7 +237,6 @@ export const protectedDiscoverRouter = createTRPCRouter({
     const venueIds = [...toppestRatedBars, ...toppestRatedClubs].map(
       (v) => v.id
     );
-    const now = new Date();
     const result = await Promise.all(
       venueIds.map(
         (id) =>

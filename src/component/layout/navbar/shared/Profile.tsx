@@ -6,14 +6,14 @@ import dynamic from 'next/dynamic';
 const LoginModal = dynamic(() => import('@/component/modals/login/LoginModal'));
 
 const LoginBTN = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   const { open } = useLoginModal();
   if (!session) return <Button onClick={open}>Login</Button>;
   return null;
 };
 
 const ProfileAvatar = () => {
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
   if (!session) return null;
 
   return <Avatar src={session.user.image ?? session.user.name ?? 'A'} />;

@@ -1,4 +1,4 @@
-import { Card, CardBody, Heading, Tag, HStack } from '@chakra-ui/react';
+import { Heading, Tag, HStack } from '@chakra-ui/react';
 
 const CategoryTag = ({
   name,

@@ -40,6 +40,7 @@ export default function DiscoverPage(
         <DiscoverSection
           href="./discover"
           key="near"
+          hasPriority
           title={`Near ${city ?? ''}, ${country ?? ''}`}
           data={data?.nearest}
           isLoading={isLoading}

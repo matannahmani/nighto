@@ -31,13 +31,6 @@ type countryMapT =
   | null;
 const countryMap = new Map<string, countryMapT>();
 
-type countryT = Record<
-  'string',
-  {
-    name: string;
-  }
->;
-
 for (const key in country2iso) {
   countryMap.set(key, null);
 }

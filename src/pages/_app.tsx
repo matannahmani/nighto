@@ -10,7 +10,6 @@ import Layout from '@/component/layout/Layout';
 import '@/styles/globals.css';
 import { ChakraProvider } from '@chakra-ui/react';
 import { theme } from '@/theme';
-import NoSSR from '@/component/common/NoSSR';
 import Head from 'next/head';
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
