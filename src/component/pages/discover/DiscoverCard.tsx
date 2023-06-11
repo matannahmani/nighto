@@ -200,8 +200,8 @@ export function VenueCard(props: club & { isPriority?: boolean }) {
         </>
       }
       link={{
-        href: './venue/[id]',
-        query: { ...router.query, id: `${props.id}` },
+        href: '/venue/[id]',
+        query: { id: `${props.id}` },
       }}
       subtitle={props.address}
       image={props.photo}
@@ -274,8 +274,8 @@ export function EventCard(props: event) {
         )
       }
       link={{
-        href: './venue/[id]',
-        query: { ...router.query, id: `${props.id}` },
+        href: '/event/[id]',
+        query: { id: `${props.id}` },
       }}
       subtitle={props.venue.address}
       image={props.photo}

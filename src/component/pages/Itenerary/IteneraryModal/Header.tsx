@@ -2,14 +2,18 @@ import { api } from '@/utils/api';
 import { ChevronLeftIcon } from '@chakra-ui/icons';
 import { ModalHeader, IconButton, Button } from '@chakra-ui/react';
 import { useAtom, useAtomValue } from 'jotai';
+import { useEffect } from 'react';
 import type { IteneraryPrompt } from './atom';
 import { stageAtom, canMoveAtom, IteneraryAtom } from './atom';
 import useItenaryModal from './useItenaryModal';
 
 export const useGenerateItenerary = () => {
   const generateIteneraryMutation =
-    api.protected.discover.generate.useMutation();
+  api.protected.discover.generate.useMutation();
   const { open, stage, canMove, ...payload } = useAtomValue(IteneraryAtom);
+  useEffect(() => {
+    void generateIteneraryMutation.reset()
+  },[open])
   const generateItenerary = async () => {
     if (
       !payload.genre ||
@@ -64,8 +68,9 @@ const Header = (props: useGenerateIteneraryReturn) => {
       />
       <Button
         onClick={() => {
-          if (stage === 4) {
+          if (!mutation.isSuccess && stage === 4) {
             setStage(5);
+            
             void generateItenerary();
             return;
           }

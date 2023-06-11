@@ -17,11 +17,13 @@ import { Text } from '@chakra-ui/react';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import { DiscoverSection } from '../../../component/pages/discover/DiscoverSection';
+import { useMemo } from 'react';
 
 export default function DiscoverPage(
   props: InferGetStaticPropsType<typeof getStaticProps>
 ) {
   const { country, city } = props;
+
   const { isLoading, data } = api.discover.retreive.useQuery(
     country && city ? { country, city } : undefined,
     {

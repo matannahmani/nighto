@@ -13,9 +13,15 @@ import {
   createIcon,
   useColorModeValue,
 } from '@chakra-ui/react';
-import React from 'react';
+import Link from 'next/link';
+import React, { useMemo } from 'react';
+import { getDiscovery } from '../discover/atom';
 
 export default function LandingHero() {
+  const discoveryPath = useMemo(() => {
+    const { country, city } = getDiscovery();
+    return `/${country}/${city}`.toLowerCase();
+  }, []);
   return (
     <Container maxW={'7xl'}>
       <Stack
@@ -68,6 +74,8 @@ export default function LandingHero() {
             <Button
               rounded={'full'}
               size={'lg'}
+              as={Link}
+              href={`${discoveryPath}/discover`}
               fontWeight={'normal'}
               px={6}
               colorScheme={'red'}

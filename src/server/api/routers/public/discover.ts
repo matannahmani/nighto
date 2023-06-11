@@ -105,6 +105,44 @@ type getPromptResult = {
  * This is event router for public API
  */
 export const discoverRouter = createTRPCRouter({
+  search: publicProcedure.input(z.string()).query(async ({ input }) => {
+    const venuesPromise = prisma.venue.findMany({
+      where: {
+        name: {
+          contains: input,
+        },
+      },
+      include: {
+        venueGenre: {
+          include: {
+            genre: true,
+          },
+        },
+      },
+      take: 10,
+    });
+    const eventsPromise = prisma.event.findMany({
+      where: {
+        name: {
+          contains: input,
+        },
+      },
+      include: {
+        EventGenre: {
+          include: {
+            genre: true,
+          },
+        },
+        venue: true,
+      },
+      take: 10,
+    });
+    const [venues, events] = await Promise.all([venuesPromise, eventsPromise]);
+    return {
+      venues,
+      events,
+    };
+  }),
   retreive: publicProcedure.input(retreiveZod).query(async ({ input }) => {
     const toppestRatedBarsPromise = prisma.venue.findMany({
       ...(input && {
@@ -197,6 +235,33 @@ export const discoverRouter = createTRPCRouter({
       events: toppestRatedEvents,
     };
   }),
+  venueById: publicProcedure
+    .input(z.coerce.number())
+    .query(async ({ input }) => {
+      const venue = await prisma.venue.findUnique({
+        where: {
+          id: input,
+        },
+        include: {
+          events: {
+            include: {
+              EventGenre: {
+                include: {
+                  genre: true,
+                },
+              },
+              venue: true,
+            },
+          },
+          venueGenre: {
+            include: {
+              genre: true,
+            },
+          },
+        },
+      });
+      return venue;
+    }),
   byPrompt: publicProcedure.input(byPromptZod).query(async ({ input }) => {
     const toppestRatedBarsPromise = prisma.venue.findMany({
       ...(input && {

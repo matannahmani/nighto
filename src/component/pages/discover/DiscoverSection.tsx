@@ -30,13 +30,19 @@ type DiscoverSectionT = {
   title: string;
   isLoading: boolean;
   href: string;
+  disableSeeAll?: boolean;
+  titleColor?: string;
   data: DiscoverData[] | undefined;
+  disableMargin?: boolean;
   hasPriority?: boolean;
 };
 export function DiscoverSection({
   title,
   data,
   isLoading,
+  titleColor,
+  disableMargin,
+  disableSeeAll,
   href,
   hasPriority,
 }: DiscoverSectionT) {
@@ -54,7 +60,7 @@ export function DiscoverSection({
   return (
     <Flex
       w="100%"
-      my={4}
+      my={disableMargin ? 0 : 4}
       direction="column"
       alignItems="flex-start"
       overflow="hidden"
@@ -65,24 +71,33 @@ export function DiscoverSection({
           sm: '320px',
         }}
       >
-        <Text textTransform="capitalize" fontSize="xl" fontWeight="bold">
+        <Text
+          {...{
+            color: titleColor || 'white',
+          }}
+          textTransform="capitalize"
+          fontSize="xl"
+          fontWeight="bold"
+        >
           {title}
         </Text>
-        <Link
-          ml="auto!important"
-          mr="2!important"
-          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
-          href={{
-            pathname: href,
-            query: router.query,
-          }}
-          as={NextLink}
-        >
-          <Text color="purple.400" fontSize="sm">
-            See all
-          </Text>
-        </Link>
+        {!disableSeeAll && (
+          <Link
+            ml="auto!important"
+            mr="2!important"
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            href={{
+              pathname: href,
+              query: router.query,
+            }}
+            as={NextLink}
+          >
+            <Text color="purple.400" fontSize="sm">
+              See all
+            </Text>
+          </Link>
+        )}
       </HStack>
       <HStack spacing={4}>
         {isLoading && (
@@ -110,6 +125,7 @@ export function DiscoverSection({
               <EventCard {...venue} key={`${title}-event-${venue.id}`} />
             )
           )}
+        {!isLoading && data?.length === 0 && <Text>No {title} found</Text>}
       </Box>
     </Flex>
   );

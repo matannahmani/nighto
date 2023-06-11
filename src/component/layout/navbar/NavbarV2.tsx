@@ -21,7 +21,7 @@ import {
   useBreakpointValue,
   SkeletonCircle,
 } from '@chakra-ui/react';
-import { AddIcon } from '@chakra-ui/icons';
+import { AddIcon, CalendarIcon, SearchIcon } from '@chakra-ui/icons';
 import { signOut, useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import { useLoginModal } from '@/component/modals/login/LoginModal';
@@ -37,7 +37,15 @@ const LoginBTN = () => {
   if (!session)
     return (
       <>
-        <Button onClick={open}>Login</Button>
+        <Button
+          size={{
+            base: 'xs',
+            sm: 'sm',
+          }}
+          onClick={open}
+        >
+          Login
+        </Button>
         <LoginModal />
       </>
     );
@@ -190,10 +198,11 @@ export default function NavbarV2() {
           justifyContent={'space-between'}
         >
           <IconButton
-            size={'md'}
+            size="sm"
             icon={isOpen ? <CloseIcon /> : <HamburgerIcon />}
             aria-label={'Open Menu'}
             display={{ md: 'none' }}
+            variant={'ghost'}
             onClick={isOpen ? onClose : onOpen}
           />
 
@@ -202,10 +211,14 @@ export default function NavbarV2() {
               base: 'auto',
               md: '0',
             }}
-            ml="4"
+            ml={{
+              base: 1,
+              sm: 4,
+            }}
           >
             <AppIcon fill={useColorModeValue('gray.800', 'white')} />
           </Box>
+          {/* <NavbarSearch/> */}
           <HStack
             display={{ base: 'none', md: 'flex' }}
             mr="auto"
@@ -227,19 +240,21 @@ export default function NavbarV2() {
             </HStack>
           </HStack>
           <Flex alignItems={'center'}>
-            <Stack direction={'row'} spacing={7}>
+            <Stack direction={'row'} spacing={3}>
+              <NavbarSearch />
               <Button
                 onClick={onItenaryOpen}
                 my="auto"
-                leftIcon={<AddIcon />}
+                leftIcon={<CalendarIcon />}
                 size={{
                   base: 'xs',
                   sm: 'sm',
                 }}
+                display={{ base: 'none', md: 'flex' }}
                 variant="outline"
                 colorScheme="purple"
               >
-                Itenerary
+                AI Itenerary
               </Button>
               <Flex>
                 <ProfileOrLogin />
@@ -262,6 +277,19 @@ export default function NavbarV2() {
                     </NavLink>
                   );
               })}
+              <Button
+                onClick={onItenaryOpen}
+                w="min-content"
+                leftIcon={<CalendarIcon />}
+                size={{
+                  base: 'xs',
+                  sm: 'sm',
+                }}
+                variant="outline"
+                colorScheme="purple"
+              >
+                AI Itenerary
+              </Button>
               {/* <Button w="min-content" onClick={toggleColorMode}>
                 {colorMode === 'light' ? 'Dark' : 'Light'}
                 &nbsp;&nbsp;
@@ -280,6 +308,7 @@ import { HamburgerIcon, CloseIcon } from '@chakra-ui/icons';
 import { MdHome, MdSearch } from 'react-icons/md';
 import { getDiscovery } from '@/component/pages/discover/atom';
 import useItenaryModal from '@/component/pages/Itenerary/IteneraryModal/useItenaryModal';
+import NavbarSearch from './Search';
 
 type Link = {
   label: string;
@@ -307,14 +336,26 @@ const Links: readonly Link[] = [
   {
     label: 'Night Clubs',
     href: '/clubs',
+    prefix: (session) => {
+      const { country, city } = getDiscovery();
+      return `/${country}/${city}`.toLowerCase();
+    },
   },
   {
     label: 'Bars',
     href: '/bars',
+    prefix: (session) => {
+      const { country, city } = getDiscovery();
+      return `/${country}/${city}`.toLowerCase();
+    },
   },
   {
     label: 'Events',
     href: '/events',
+    prefix: (session) => {
+      const { country, city } = getDiscovery();
+      return `/${country}/${city}`.toLowerCase();
+    },
   },
   {
     label: 'Managment Dashboard',

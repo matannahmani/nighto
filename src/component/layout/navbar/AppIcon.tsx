@@ -7,8 +7,8 @@ const AppIcon = (props: ChakraProps) => (
     viewBox="0 0 166.888 60"
     className="font"
     width={{
-      base: '6em',
-      sm: '8em',
+      base: '4em',
+      sm: '6em',
     }}
     height="auto"
     {...props}
